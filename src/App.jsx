@@ -30,7 +30,7 @@ const stagger = {
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
-const scrollConfig = { once: false, amount: 0.1 }; 
+const scrollConfig = { once: true, amount: 0.1 }; 
 
 // Оновлена галерея на 8 фото у форматі .webp
 const galleryData = [
@@ -43,6 +43,66 @@ const galleryData = [
   { text: "Фентезі", orig: "/7.webp", draw: "/77.webp" },
   { text: "Транспорт", orig: "/8.webp", draw: "/88.webp" }
 ];
+
+// === АВТОМАТИЧНА 3D КАРУСЕЛЬ ГОЛОВНОГО ЕКРАНУ ===
+const HeroCarousel = () => {
+  const images = ['/image.png', '/1image.png', '/2image.png'];
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <div className="relative w-full max-w-[800px] h-[450px] md:h-[650px] mx-auto flex items-center justify-center" style={{ perspective: '1200px' }}>
+      
+      <motion.div 
+        animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.95, 1.05, 0.95] }}
+        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+        className="absolute inset-0 bg-gradient-to-tr from-[#FF1493] to-[#FF5F15] rounded-full blur-[70px] z-0 pointer-events-none will-change-transform"
+      />
+
+      {images.map((img, index) => {
+        let offset = index - activeIndex;
+        if (offset === -2) offset = 1;
+        if (offset === 2) offset = -1;
+
+        const isCenter = offset === 0;
+        const xOffset = window.innerWidth < 768 ? 85 : 180;
+
+        return (
+          <motion.div
+            key={img}
+            initial={false}
+            animate={{
+              x: offset * xOffset,
+              scale: isCenter ? 1 : 0.85,
+              zIndex: isCenter ? 30 : 10,
+              opacity: isCenter ? 1 : 0.6,
+              rotateY: offset * -20,
+              y: isCenter ? 0 : 25 
+            }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="absolute flex flex-col items-center justify-center pointer-events-none"
+          >
+            <img
+              src={img}
+              alt="Журнал"
+              className="w-[280px] md:w-[450px] h-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)] relative z-10"
+            />
+            
+            <div 
+              className="absolute -bottom-6 md:-bottom-10 w-[220px] md:w-[360px] h-[15px] md:h-[20px] bg-slate-900/50 rounded-[100%] blur-[12px] z-0"
+            />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
 
 // --- ПОВНОЕКРАННИЙ СЛАЙДЕР ДО/ПІСЛЯ ---
 const CompareModal = ({ isOpen, onClose, data }) => {
@@ -233,9 +293,9 @@ export default function App() {
   const yHero = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
   const prices = {
-    9: { old: 500, new: 370, label: 'ЕКОНОМ' },
-    14: { old: 750, new: 550, label: 'ОПТИМАЛЬНИЙ' },
-    23: { old: 1000, new: 600, label: 'МАКСИМАЛЬНИЙ' }
+    9: { old: 500, new: 400, label: 'Lite' },
+    14: { old: 620, new: 550, label: 'PRO' },
+    23: { old: 1010, new: 700, label: 'Maximum' }
   };
 
   const scrollToOrder = () => {
@@ -243,10 +303,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative">
+    <div 
+      className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       
-      <motion.div style={{ y: yBg1 }} className="absolute top-[10%] left-[-10%] w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] bg-gradient-to-br from-[#FF1493]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
-      <motion.div style={{ y: yBg2 }} className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-gradient-to-bl from-[#FF5F15]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
+      <motion.div style={{ y: yBg1, willChange: "transform" }} className="absolute top-[10%] left-[-10%] w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] bg-gradient-to-br from-[#FF1493]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
+      <motion.div style={{ y: yBg2, willChange: "transform" }} className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-gradient-to-bl from-[#FF5F15]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
 
       <CompareModal isOpen={!!selectedImageModal} onClose={() => setSelectedImageModal(null)} data={selectedImageModal} />
 
@@ -278,8 +341,8 @@ export default function App() {
         
         <motion.div 
           initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp}
-          style={{ y: yHero }}
-          className="text-center max-w-4xl mx-auto mb-16"
+          style={{ y: yHero, willChange: "transform" }}
+          className="text-center max-w-4xl mx-auto mb-6 md:mb-16"
         >
           <motion.div 
             whileHover={{ rotate: [0, -3, 3, -3, 0] }}
@@ -299,37 +362,18 @@ export default function App() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-32 items-center max-w-6xl mx-auto">
           
           <motion.div 
             initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeRight}
             className="relative w-full max-w-[550px] mx-auto"
           >
-            <motion.div 
-              animate={{ y: [0, -12, 0], scale: [1, 1.01, 1] }} 
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="relative"
-            >
-              <motion.div 
-                animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.95, 1.05, 0.95] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-                className="absolute inset-0 bg-gradient-to-tr from-[#FF1493] to-[#FF5F15] rounded-3xl blur-[50px] z-0"
-              />
-              <img 
-                src="/image.png" 
-                decoding="async"
-                className="w-full h-auto rounded-3xl object-cover relative z-10 drop-shadow-[0_25px_35px_rgba(0,0,0,0.3)]"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-            </motion.div>
+            <HeroCarousel />
           </motion.div>
 
           <motion.div 
             initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeLeft}
-            className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-white/80 border-white/60 mx-auto max-w-md lg:max-w-lg"
+            className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-white/80 border-white/60 mx-auto max-w-lg lg:max-w-xl"
           >
             <div className="text-center mb-8 relative z-10">
               <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">СТВОРИ ЗАРАЗ</h2>
@@ -369,10 +413,10 @@ export default function App() {
             <motion.button 
               whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }}
               whileTap={{ scale: 0.95 }}
-              className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-lg md:text-xl font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide"
+              className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4"
             >
               ЗАМОВИТИ РОЗМАЛЬОВКУ
-              <ChevronRight size={26} />
+              <ChevronRight size={26} className="shrink-0" />
             </motion.button>
           </motion.div>
         </div>
@@ -396,11 +440,13 @@ export default function App() {
             <motion.div 
               animate={{ scale: [1, 1.03, 1], boxShadow: ["0 5px 15px rgba(255,20,147,0.1)", "0 15px 25px rgba(255,20,147,0.25)", "0 5px 15px rgba(255,20,147,0.1)"] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="bg-white/95 backdrop-blur-md px-6 py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap"
+              className="bg-white/95 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap"
             >
-              <Sparkles className="text-[#FF5F15] shrink-0" size={20}/> 
-              <span className="text-[#FF1493] font-black tracking-widest uppercase text-xs md:text-sm whitespace-nowrap">Натисни на фото, щоб побачити магію</span>
-              <span className="text-lg md:text-xl drop-shadow-md shrink-0">👇</span>
+              <Sparkles className="text-[#FF5F15] shrink-0 w-4 h-4 md:w-5 md:h-5" /> 
+              <span className="text-[#FF1493] font-black tracking-widest uppercase text-[10px] md:text-sm whitespace-nowrap">
+                Натисни на фото, щоб побачити магію
+              </span>
+              <span className="text-sm md:text-xl drop-shadow-md shrink-0">👇</span>
             </motion.div>
           </motion.div>
 

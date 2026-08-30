@@ -11,18 +11,47 @@
   }
 }
 
+/* ЗАХИСТ ВІД КОПІЮВАННЯ ТА ВИДІЛЕННЯ */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(-45deg, #e0f2fe, #fae8ff, #fef08a, #ffecd2);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: #e5e7eb; /* Резервний колір */
+  
+  /* Забороняємо виділення тексту всюди */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Стандарт */
 }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Забороняємо "тягати" картинки мишкою */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* Виносимо фон в окремий апаратно прискорений шар */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at center, transparent 20%, rgba(15, 23, 42, 0.18) 120%),
+    linear-gradient(-45deg, #e5e7eb, #ffffff, #d1d5db, #f8fafc, #9ca3af);
+  background-size: 100vw 100vh, 400% 400%; 
+  animation: silverShimmer 14s ease-in-out infinite alternate;
+  pointer-events: none;
+  /* Кажемо браузеру заздалегідь підготувати анімацію */
+  will-change: background-position;
+}
+
+@keyframes silverShimmer {
+  0% { background-position: center, 0% 50%; }
+  100% { background-position: center, 100% 50%; }
 }
