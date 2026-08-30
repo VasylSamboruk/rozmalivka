@@ -319,7 +319,7 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2 text-2xl font-black tracking-tight">
-            <span className="text-[#FF5F15]">✏️ Чарівна</span> Лінія
+            <span className="text-[#FF5F15]">✏️ Моя</span> Розмальовка
           </div>
           <div className="hidden md:flex gap-8 font-bold text-sm text-slate-700">
             <a href="#gallery" className="hover:text-[#FF1493] transition-all">Галерея</a>
@@ -565,7 +565,7 @@ export default function App() {
       <footer className="bg-white/80 backdrop-blur-lg border-t border-white/60 py-6 md:py-8 mt-auto shrink-0 w-full relative z-20">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
           <div className="font-black text-xl flex items-center gap-2">
-            <span className="text-[#FF5F15]">✏️ Чарівна</span> Лінія
+            <span className="text-[#FF5F15]">✏️ Моя </span> Розмальовка
           </div>
           <p className="text-slate-500 font-bold text-xs">© 2026 Всі права захищено.</p>
         </div>
