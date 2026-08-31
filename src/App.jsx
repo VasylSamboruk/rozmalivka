@@ -485,13 +485,22 @@ export default function App() {
             Ми можемо <b className="text-slate-800">створити</b> розмальовку ідентично по вашому фото або ж перенести головного героя у світ фантазій. Будь-яка тематика за вашим бажанням!
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3 mt-4 text-xs md:text-sm font-bold text-slate-700">
-            <span className="bg-white/80 px-4 py-2.5 rounded-xl shadow-sm border border-white/50 flex items-center gap-2">
-              <Palette size={18} className="text-[#FF5F15]" /> Вже створили 100+ розмальовок
-            </span>
-            <span className="bg-white/80 px-4 py-2.5 rounded-xl shadow-sm border border-white/50 flex items-center gap-2">
-              <span className="text-lg">⏱️</span> Виготовлення від 1 до 3 днів!
-            </span>
+          <div className="flex justify-center gap-2 md:gap-6 mt-8 md:mt-10 text-[9px] sm:text-xs md:text-sm font-bold text-slate-700 w-full px-1">
+            
+            <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
+              <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+                <Palette className="text-[#FF5F15] w-3.5 h-3.5 md:w-5 md:h-5" /> 
+              </div>
+              <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Вже створили 100+ розмальовок</span>
+            </div>
+
+            <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
+              <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+                <span className="text-[12px] md:text-xl leading-none">⏱️</span> 
+              </div>
+              <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Виготовлення від 1 до 3 днів!</span>
+            </div>
+
           </div>
 
         </motion.div>
@@ -613,7 +622,7 @@ export default function App() {
           {/* ПК Сітка (Тепер 2 ряди по 4 фото) */}
           <motion.div 
             initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
-            className="hidden md:grid md:grid-cols-4 gap-8 max-w-[85rem] mx-auto pb-10 px-4"
+            className="hidden md:grid md:grid-cols-4 gap-8 max-w-[85rem] mx-auto px-4" 
           >
             {galleryData.map((role, idx) => (
               <GalleryItemPC key={idx} role={role} idx={idx} onClick={setSelectedImageModal} />
@@ -624,7 +633,7 @@ export default function App() {
       </section>
 
       {/* БЛОК: СІМЕЙНІ ТА ДЛЯ ДОРОСЛИХ */}
-      <section id="about" className="py-12 relative z-10 shrink-0">
+      <section id="about" className="pt-2 pb-12 relative z-10 shrink-0">
         <motion.div 
           initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp}
           className="max-w-5xl mx-auto px-4"
