@@ -3,7 +3,8 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { 
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
-  X, ChevronsLeftRight, Heart
+  X, ChevronsLeftRight, Heart, CheckCircle2, ChevronDown,
+  Send, Phone
 } from 'lucide-react';
 
 // === ОПТИМІЗОВАНІ АНІМАЦІЇ ДЛЯ ПЛАВНОСТІ ===
@@ -42,6 +43,16 @@ const galleryData = [
   { text: "Супергерої", orig: "/6.webp", draw: "/66.webp" },
   { text: "Фентезі", orig: "/7.webp", draw: "/77.webp" },
   { text: "Транспорт", orig: "/8.webp", draw: "/88.webp" }
+];
+
+const faqs = [
+  { q: "Що робити, якщо фото не дуже якісне?", a: "Наші дизайнери можуть значно покращити якість більшості фото під час обробки. Якщо ж фото зовсім не підходить для якісного результату, ми обов'язково повідомимо вас і попросимо інший варіант перед початком роботи." },
+  { q: "Скільки правок/узгоджень включено в ціну?", a: "Ми завжди погоджуємо з вами ескізи перед тим, як відправити їх до друку. У вартість включено до 3-х безкоштовних правок, щоб ви були на 100% задоволені результатом." },
+  { q: "Чи можна кілька людей/персонажів в одній розмальовці?", a: "Так, звичайно! Ми можемо об'єднати людей з різних фотографій в один спільний гармонійний сюжет без жодних доплат." },
+  { q: "Які терміни виготовлення та доставки?", a: "Виготовлення займає від 1 до 3 днів! Після цього ми відправляємо замовлення Новою Поштою (доставка зазвичай займає 1-2 дні)." },
+  { q: "Як відбувається оплата?", a: "Ми працюємо по повній передоплаті. Оскільки кожна розмальовка — це унікальний товар, який малюється та друкується індивідуально під ваше замовлення, ми беремо повну оплату перед запуском у виробництво." },
+  { q: "Чи можна замовити для дорослого/у подарунок?", a: "Абсолютно! Це один із найпопулярніших форматів. Розмальовки-антистрес, сімейні сюжети або love-story — чудовий та оригінальний подарунок для дорослих." },
+  { q: "Що робити, якщо результат не сподобався?", a: "Оскільки ми погоджуємо кожен макет перед друком, сюрпризів не буде. Якщо ж на етапі ескізу вам зовсім не сподобається напрямок, ми обов'язково переробимо його." }
 ];
 
 // === АВТОМАТИЧНА 3D КАРУСЕЛЬ ГОЛОВНОГО ЕКРАНУ ===
@@ -283,9 +294,125 @@ const GalleryItemPC = ({ role, idx, onClick }) => {
   );
 };
 
+// === КОМПОНЕНТ FAQ ===
+const FaqItem = ({ faq, isOpen, onClick }) => {
+  return (
+    <motion.div 
+      variants={fadeUp}
+      className={`glass-card border-2 transition-colors duration-300 rounded-2xl overflow-hidden cursor-pointer ${isOpen ? 'border-[#FF5F15] bg-white/90 shadow-md' : 'border-white/60 bg-white/60 hover:bg-white/80'}`}
+      onClick={onClick}
+    >
+      <div className="p-5 flex justify-between items-center gap-4">
+        <h3 className="font-black text-slate-800 text-base md:text-lg">{faq.q}</h3>
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="text-[#FF1493] shrink-0">
+          <ChevronDown size={24} />
+        </motion.div>
+      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-5 pt-0 text-slate-600 font-medium leading-relaxed border-t border-slate-100/50 mt-1">
+              {faq.a}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+// === МОДАЛЬНЕ ВІКНО ОФОРМЛЕННЯ ЗАМОВЛЕННЯ ===
+const OrderModal = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={springConfig}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#F8F9FA] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-20 h-20 bg-[#FF1493]/10 text-[#FF1493] rounded-full flex items-center justify-center mb-5 shadow-inner">
+              <MessageCircleHeart size={40} />
+            </div>
+
+            <h3 className="text-2xl font-black text-slate-800 mb-2">Оформлення<br/>замовлення</h3>
+            <p className="text-slate-600 font-medium mb-6 text-sm leading-relaxed">
+              Ви можете оформити замовлення безпосередньо в месенджерах. Натисніть кнопку нижче, щоб перейти до нашого менеджера:
+            </p>
+
+            <div className="w-full flex flex-col gap-3 mb-6">
+              <a
+                href="https://t.me/my_rozm" 
+                target="_blank"
+                rel="noreferrer"
+                className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]"
+              >
+                <Send size={20} /> Telegram
+              </a>
+              <a
+                href="viber://chat?number=%2B380931355348" 
+                target="_blank"
+                rel="noreferrer"
+                className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]"
+              >
+                <Phone size={20} /> Viber
+              </a>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl w-full space-y-3 border border-slate-200 shadow-sm">
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">⏱️</span> Виготовлення 1-2 дні
+              </p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">📦</span> Доставка НП (1-2 дні)
+              </p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">💳</span> Працюємо по повній передоплаті
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function App() {
   const [selectedPages, setSelectedPages] = useState(14);
   const [selectedImageModal, setSelectedImageModal] = useState(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   const { scrollYProgress } = useScroll();
   const yBg1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
@@ -298,10 +425,6 @@ export default function App() {
     23: { old: 1010, new: 700, label: 'Maximum' }
   };
 
-  const scrollToOrder = () => {
-    document.getElementById('order-section').scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <div 
       className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative"
@@ -312,6 +435,7 @@ export default function App() {
       <motion.div style={{ y: yBg2, willChange: "transform" }} className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-gradient-to-bl from-[#FF5F15]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
 
       <CompareModal isOpen={!!selectedImageModal} onClose={() => setSelectedImageModal(null)} data={selectedImageModal} />
+      <OrderModal isOpen={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} />
 
       <motion.nav 
         initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig}
@@ -329,7 +453,7 @@ export default function App() {
           <motion.button 
             whileHover={{ scale: 1.05, rotate: [-2, 2, 0] }}
             whileTap={{ scale: 0.95 }}
-            onClick={scrollToOrder}
+            onClick={() => setIsOrderModalOpen(true)}
             className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide"
           >
             Замовити
@@ -357,9 +481,19 @@ export default function App() {
             </span> <br />
             З ВЛАСНИХ ФОТО
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed mb-6">
             Ми можемо <b className="text-slate-800">створити</b> розмальовку ідентично по вашому фото або ж перенести головного героя у світ фантазій. Будь-яка тематика за вашим бажанням!
           </p>
+
+          <div className="flex flex-wrap justify-center gap-3 mt-4 text-xs md:text-sm font-bold text-slate-700">
+            <span className="bg-white/80 px-4 py-2.5 rounded-xl shadow-sm border border-white/50 flex items-center gap-2">
+              <Palette size={18} className="text-[#FF5F15]" /> Вже створили 100+ розмальовок
+            </span>
+            <span className="bg-white/80 px-4 py-2.5 rounded-xl shadow-sm border border-white/50 flex items-center gap-2">
+              <span className="text-lg">⏱️</span> Виготовлення від 1 до 3 днів!
+            </span>
+          </div>
+
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-32 items-center max-w-6xl mx-auto">
@@ -387,25 +521,45 @@ export default function App() {
                   whileTap={{ scale: 0.98 }}
                   key={num}
                   onClick={() => setSelectedPages(num)}
-                  className={`w-full flex items-center justify-between p-4 md:p-5 rounded-2xl border-2 transition-colors duration-300 relative ${
+                  className={`w-full flex flex-col p-4 md:p-5 rounded-2xl border-2 transition-colors duration-300 relative ${
                     selectedPages === num 
                       ? 'border-[#FF5F15] bg-white shadow-xl scale-[1.02]' 
                       : 'border-white/80 hover:border-[#FF5F15]/50 bg-white/60 hover:bg-white'
                   }`}
                 >
-                  {selectedPages === num && (
-                    <motion.div layoutId="badge" className="absolute -top-3 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-[11px] uppercase font-black px-3 py-1 rounded-full shadow-lg">
-                      {prices[num].label}
-                    </motion.div>
-                  )}
-                  <span className="text-lg md:text-xl font-black flex items-center gap-3 text-slate-700">
-                    <Palette size={24} className={selectedPages === num ? "text-[#FF5F15]" : "text-slate-400"} />
-                    {num} арк.
-                  </span>
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-slate-400 line-through block mb-[-2px]">{prices[num].old} ₴</span>
-                    <span className="text-xl md:text-2xl font-black text-slate-900">{prices[num].new} <span className="text-base">₴</span></span>
+                  <div className="flex items-center justify-between w-full">
+                    {selectedPages === num && (
+                      <motion.div layoutId="badge" className="absolute -top-3 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-[11px] uppercase font-black px-3 py-1 rounded-full shadow-lg">
+                        {prices[num].label}
+                      </motion.div>
+                    )}
+                    <span className="text-lg md:text-xl font-black flex items-center gap-3 text-slate-700">
+                      <Palette size={24} className={selectedPages === num ? "text-[#FF5F15]" : "text-slate-400"} />
+                      {num} арк.
+                    </span>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-slate-400 line-through block mb-[-2px]">{prices[num].old} ₴</span>
+                      <span className="text-xl md:text-2xl font-black text-slate-900">{prices[num].new} <span className="text-base">₴</span></span>
+                    </div>
                   </div>
+
+                  <AnimatePresence>
+                    {selectedPages === num && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }} 
+                        animate={{ height: 'auto', opacity: 1 }} 
+                        exit={{ height: 0, opacity: 0 }} 
+                        className="mt-3 pt-3 border-t border-slate-100/50 w-full overflow-hidden text-left"
+                      >
+                        <ul className="text-xs md:text-sm text-slate-600 space-y-2 font-medium">
+                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500 shrink-0"/> Формат А4, преміум-папір</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500 shrink-0"/> Кольорова обкладинка на спіралі</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#FF1493] shrink-0"/> <b>{num} ваших фото</b>, перетворених у розмальовку</li>
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                 </motion.button>
               ))}
             </div>
@@ -413,6 +567,7 @@ export default function App() {
             <motion.button 
               whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setIsOrderModalOpen(true)}
               className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4"
             >
               ЗАМОВИТИ РОЗМАЛЬОВКУ
@@ -524,6 +679,30 @@ export default function App() {
                   </p>
                 </div>
               </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FAQ (ЧАСТІ ПИТАННЯ) */}
+      <section id="faq" className="py-20 shrink-0 relative z-10">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-black mb-4">ЧАСТІ <span className="text-[#FF1493]">ПИТАННЯ</span></h2>
+            <p className="text-slate-600 font-medium">Зібрали відповіді на найпопулярніші запитання для вас</p>
+          </motion.div>
+
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
+            className="flex flex-col gap-4"
+          >
+            {faqs.map((faq, idx) => (
+              <FaqItem 
+                key={idx} 
+                faq={faq} 
+                isOpen={openFaqIndex === idx} 
+                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} 
+              />
             ))}
           </motion.div>
         </div>
