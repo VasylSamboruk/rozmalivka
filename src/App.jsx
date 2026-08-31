@@ -4,8 +4,9 @@ import {
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
   X, ChevronsLeftRight, Heart, CheckCircle2, ChevronDown,
-  Send, Phone
+  Send, Phone, ShieldCheck // <--- ДОДАНО ShieldCheck
 } from 'lucide-react';
+
 
 // === ОПТИМІЗОВАНІ АНІМАЦІЇ ДЛЯ ПЛАВНОСТІ ===
 const springConfig = { type: "spring", stiffness: 80, damping: 15, mass: 0.8 };
@@ -54,6 +55,7 @@ const faqs = [
   { q: "Чи можна замовити для дорослого/у подарунок?", a: "Абсолютно! Це один із найпопулярніших форматів. Розмальовки-антистрес, сімейні сюжети або love-story — чудовий та оригінальний подарунок для дорослих." },
   { q: "Що робити, якщо результат не сподобався?", a: "Оскільки ми погоджуємо кожен макет перед друком, сюрпризів не буде. Якщо ж на етапі ескізу вам зовсім не сподобається напрямок, ми обов'язково переробимо його." }
 ];
+
 
 // === АВТОМАТИЧНА 3D КАРУСЕЛЬ ГОЛОВНОГО ЕКРАНУ ===
 const HeroCarousel = () => {
@@ -413,6 +415,15 @@ export default function App() {
   const [selectedImageModal, setSelectedImageModal] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const { scrollYProgress } = useScroll();
   const yBg1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
@@ -439,22 +450,60 @@ export default function App() {
 
       <motion.nav 
         initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig}
-        className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm"
+        className="fixed top-0 w-full z-50 pointer-events-none"
       >
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-2xl font-black tracking-tight">
+        <motion.div 
+          initial={false}
+          animate={{ y: isScrolled ? -100 : 0, opacity: isScrolled ? 0 : 1 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute inset-0 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm pointer-events-auto"
+        />
+
+        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative z-10">
+          
+          {/* Логотип зі збереженим оригінальним розміром (text-2xl) */}
+          <motion.div 
+            initial={false}
+            animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className={`flex items-center gap-2 text-2xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}
+          >
             <span className="text-[#FF5F15]">✏️ Моя</span> Розмальовка
-          </div>
-          <div className="hidden md:flex gap-8 font-bold text-sm text-slate-700">
+          </motion.div>
+
+          <motion.div 
+            initial={false}
+            animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }}
+            transition={{ duration: 0.3 }}
+            className={`hidden md:flex gap-8 font-bold text-sm text-slate-700 ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}
+          >
             <a href="#gallery" className="hover:text-[#FF1493] transition-all">Галерея</a>
             <a href="#about" className="hover:text-[#FF1493] transition-all">Для кого</a>
             <a href="#how-it-works" className="hover:text-[#FF1493] transition-all">Як працює</a>
-          </div>
+          </motion.div>
+
+          {/* Кнопка з оригінальними відступами (px-6 py-2.5) */}
           <motion.button 
-            whileHover={{ scale: 1.05, rotate: [-2, 2, 0] }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            animate={isScrolled ? {
+              rotate: [0, -5, 5, -5, 5, 0],
+              scale: [1, 1.05, 1],
+              boxShadow: ["0px 0px 0px rgba(255,20,147,0)", "0px 10px 25px rgba(255,20,147,0.5)", "0px 0px 0px rgba(255,20,147,0)"]
+            } : {
+              rotate: 0,
+              scale: 1,
+              boxShadow: "0 10px 15px -3px rgba(255,20,147,0.3)"
+            }}
+            transition={isScrolled ? { 
+              repeat: Infinity, 
+              duration: 1.5, 
+              repeatDelay: 2.5,
+              ease: "easeInOut"
+            } : { duration: 0.3 }}
             onClick={() => setIsOrderModalOpen(true)}
-            className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide"
+            className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto"
           >
             Замовити
           </motion.button>
@@ -518,7 +567,7 @@ export default function App() {
               <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Оберіть об'єм</p>
             </div>
 
-            <div className="space-y-4 mb-8 relative z-10">
+            <div className="space-y-4 mb-4 relative z-10">
               {[9, 14, 23].map((num) => (
                 <motion.button
                   whileHover={{ scale: 1.02, x: 5 }}
@@ -566,6 +615,15 @@ export default function App() {
 
                 </motion.button>
               ))}
+            </div>
+
+            {/* БЛОК БЕЗПЕЧНОЇ ОПЛАТИ */}
+            <div className="flex flex-col items-center justify-center gap-2.5 mb-6 mt-2 relative z-10">
+              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                <ShieldCheck size={16} className="text-green-500" />
+                Гарантія безпечної оплати
+              </div>
+          
             </div>
 
             <motion.button 
@@ -663,22 +721,30 @@ export default function App() {
               { icon: <PackageOpen />, title: "4. Отримайте", desc: "Надійно пакуємо та швидко відправляємо поштою." }
             ].map((step, idx) => (
               <motion.div 
-                key={idx} variants={fadeUp} 
-                whileHover={{ scale: 1.05, y: -10 }}
-                className="glass-card h-full rounded-2xl md:rounded-[2rem] p-4 md:p-8 text-center shadow-lg hover:shadow-2xl bg-white/90 transition-all duration-300 border-white/80 flex flex-col items-center justify-start"
+                key={idx} 
+                variants={fadeUp} 
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-white/90 backdrop-blur-sm border-2 border-white/60 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] hover:border-white/80 flex flex-col items-center justify-start group overflow-hidden z-10"
               >
+                {/* Магічне світіння на фоні іконки при наведенні */}
+                <div className="absolute top-10 left-1/2 -translate-x-1/2 w-24 h-24 bg-[#FF1493]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
                 <motion.div 
-                  whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-                  className="w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-xl md:rounded-2xl flex items-center justify-center text-white mb-4 md:mb-6 shadow-md shrink-0"
+                  whileHover={{ rotate: 8, scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  className="relative w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-md shrink-0 z-10"
                 >
-                  {React.cloneElement(step.icon, { className: "w-7 h-7 md:w-10 md:h-10" })}
+                  {React.cloneElement(step.icon, { className: "w-7 h-7 md:w-9 md:h-9 drop-shadow-sm" })}
                 </motion.div>
                 
-                <div className="flex flex-col flex-1 w-full">
+                <div className="flex flex-col flex-1 w-full relative z-10">
                   <div className="min-h-[48px] md:min-h-[64px] flex items-center justify-center mb-2">
-                    <h3 className="text-base md:text-xl font-black text-slate-800 leading-tight">{step.title}</h3>
+                    <h3 className="text-base md:text-xl font-black text-slate-800 leading-tight group-hover:text-[#FF1493] transition-colors duration-300">
+                      {step.title}
+                    </h3>
                   </div>
-                  <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed mt-auto">
+                  <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed mt-auto transition-colors duration-300 group-hover:text-slate-800">
                     {step.desc}
                   </p>
                 </div>
