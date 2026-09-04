@@ -7,8 +7,6 @@ import {
   Send, Phone, ShieldCheck
 } from 'lucide-react';
 
-
-// === ОПТИМІЗОВАНІ АНІМАЦІЇ ДЛЯ ПЛАВНОСТІ ===
 const springConfig = { type: "spring", stiffness: 80, damping: 15, mass: 0.8 };
 const bounceConfig = { type: "spring", stiffness: 120, damping: 12, bounce: 0.4 };
 
@@ -34,7 +32,6 @@ const stagger = {
 
 const scrollConfig = { once: true, amount: 0.1 }; 
 
-// Оновлена галерея на 8 фото у форматі .webp
 const galleryData = [
   { text: "Принцеси", orig: "/1.webp", draw: "/11.webp" },
   { text: "Казки", orig: "/2.webp", draw: "/22.webp" },
@@ -56,10 +53,7 @@ const faqs = [
   { q: "Що робити, якщо результат не сподобався?", a: "Оскільки ми погоджуємо кожен макет перед друком, сюрпризів не буде. Якщо ж на етапі ескізу вам зовсім не сподобається напрямок, ми обов'язково переробимо його." }
 ];
 
-
-// === АВТОМАТИЧНА 3D КАРУСЕЛЬ ГОЛОВНОГО ЕКРАНУ ===
 const HeroCarousel = () => {
-  // Оптимізовані WebP-файли
   const images = ['/image.webp', '/1image.webp', '/2image.webp'];
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -72,13 +66,11 @@ const HeroCarousel = () => {
 
   return (
     <div className="relative w-full max-w-[800px] h-[450px] md:h-[650px] mx-auto flex items-center justify-center" style={{ perspective: '1200px' }}>
-      
       <motion.div 
         animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.95, 1.05, 0.95] }}
         transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
         className="absolute inset-0 bg-gradient-to-tr from-[#FF1493] to-[#FF5F15] rounded-full blur-[70px] z-0 pointer-events-none will-change-transform"
       />
-
       {images.map((img, index) => {
         let offset = index - activeIndex;
         if (offset === -2) offset = 1;
@@ -107,14 +99,12 @@ const HeroCarousel = () => {
               alt="Журнал"
               width={450}
               height={480}
-              fetchpriority={isCenter ? "high" : "auto"}
+              fetchPriority={index === 0 ? "high" : "auto"}
+              loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
               className="w-[280px] md:w-[450px] h-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)] relative z-10"
             />
-            
-            <div 
-              className="absolute -bottom-6 md:-bottom-10 w-[220px] md:w-[360px] h-[15px] md:h-[20px] bg-slate-900/50 rounded-[100%] blur-[12px] z-0"
-            />
+            <div className="absolute -bottom-6 md:-bottom-10 w-[220px] md:w-[360px] h-[15px] md:h-[20px] bg-slate-900/50 rounded-[100%] blur-[12px] z-0" />
           </motion.div>
         );
       })}
@@ -122,7 +112,6 @@ const HeroCarousel = () => {
   );
 };
 
-// --- ПОВНОЕКРАННИЙ СЛАЙДЕР ДО/ПІСЛЯ ---
 const CompareModal = ({ isOpen, onClose, data }) => {
   const [position, setPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -146,16 +135,8 @@ const CompareModal = ({ isOpen, onClose, data }) => {
     setPosition((x / width) * 100);
   };
 
-  const handleStart = (e) => {
-    setIsDragging(true);
-    updatePosition(e);
-  };
-
-  const handleMove = (e) => {
-    if (!isDragging) return;
-    updatePosition(e);
-  };
-
+  const handleStart = (e) => { setIsDragging(true); updatePosition(e); };
+  const handleMove = (e) => { if (!isDragging) return; updatePosition(e); };
   const handleEnd = () => setIsDragging(false);
 
   return (
@@ -164,14 +145,9 @@ const CompareModal = ({ isOpen, onClose, data }) => {
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-md touch-none"
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-          onTouchEnd={handleEnd}
+          onMouseUp={handleEnd} onMouseLeave={handleEnd} onTouchEnd={handleEnd}
         >
-          <button 
-            onClick={onClose} 
-            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors z-50 shadow-lg"
-          >
+          <button onClick={onClose} className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors z-50 shadow-lg">
             <X size={32} />
           </button>
           
@@ -183,24 +159,15 @@ const CompareModal = ({ isOpen, onClose, data }) => {
             initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} transition={springConfig}
             ref={containerRef}
             className="relative w-full max-w-2xl aspect-[3/4] md:aspect-square rounded-3xl overflow-hidden cursor-ew-resize select-none bg-slate-900 border-2 border-white/20 shadow-2xl mt-10"
-            onMouseDown={handleStart}
-            onTouchStart={handleStart}
-            onMouseMove={handleMove}
-            onTouchMove={handleMove}
+            onMouseDown={handleStart} onTouchStart={handleStart} onMouseMove={handleMove} onTouchMove={handleMove}
           >
             <img src={data.draw} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Розмальовка" />
             
-            <div 
-              className="absolute inset-0 overflow-hidden pointer-events-none border-r-2 border-white/80 shadow-[2px_0_10px_rgba(0,0,0,0.5)]"
-              style={{ width: `${position}%` }}
-            >
+            <div className="absolute inset-0 overflow-hidden pointer-events-none border-r-2 border-white/80 shadow-[2px_0_10px_rgba(0,0,0,0.5)]" style={{ width: `${position}%` }}>
               <img src={data.orig} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" style={{ width: '100vw', maxWidth: containerRef.current?.offsetWidth || '100%' }} alt="Оригінал" />
             </div>
             
-            <div 
-              className="absolute top-0 bottom-0 flex items-center justify-center pointer-events-none" 
-              style={{ left: `${position}%` }}
-            >
+            <div className="absolute top-0 bottom-0 flex items-center justify-center pointer-events-none" style={{ left: `${position}%` }}>
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.4)] text-[#FF1493] -ml-6 border-4 border-white/50">
                 <ChevronsLeftRight size={28} />
               </div>
@@ -212,7 +179,6 @@ const CompareModal = ({ isOpen, onClose, data }) => {
   );
 };
 
-// === БЕЗКІНЕЧНА 3D КАРУСЕЛЬ ДЛЯ МОБІЛЬНИХ ===
 const InfiniteMobileCarousel = ({ items, onClick }) => {
   const [active, setActive] = useState(0);
 
@@ -236,30 +202,15 @@ const InfiniteMobileCarousel = ({ items, onClick }) => {
 
     renderItems.push(
       <motion.div
-        key={index}
-        animate={{ x, rotate, scale, zIndex, opacity }}
-        transition={{ type: "spring", stiffness: 260, damping: 25 }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={handleDragEnd}
-        onClick={() => {
-          if (offset === 0) onClick(item);
-          else setActive(active + offset);
-        }}
-        className={`absolute w-[65vw] max-w-[280px] aspect-[3/4] rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.25)] overflow-hidden border-[6px] border-white cursor-grab active:cursor-grabbing bg-slate-100 flex items-center justify-center`}
+        key={index} animate={{ x, rotate, scale, zIndex, opacity }} transition={{ type: "spring", stiffness: 260, damping: 25 }}
+        drag="x" dragConstraints={{ left: 0, right: 0 }} onDragEnd={handleDragEnd}
+        onClick={() => { if (offset === 0) onClick(item); else setActive(active + offset); }}
+        className="absolute w-[65vw] max-w-[280px] aspect-[3/4] rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.25)] overflow-hidden border-[6px] border-white cursor-grab active:cursor-grabbing bg-slate-100 flex items-center justify-center"
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 z-0 pointer-events-none">
           <Camera size={32} />
         </div>
-        <img 
-          src={item.orig} 
-          loading="lazy" 
-          decoding="async" 
-          width={280} 
-          height={373} 
-          className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" 
-          alt={item.text} 
-        />
+        <img src={item.orig} loading="lazy" decoding="async" width={280} height={373} className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" alt={item.text} />
       </motion.div>
     );
   }
@@ -271,61 +222,31 @@ const InfiniteMobileCarousel = ({ items, onClick }) => {
   );
 };
 
-// === ЕЛЕМЕНТ СІТКИ ДЛЯ ПК ===
 const GalleryItemPC = ({ role, idx, onClick }) => {
   const [isActive, setIsActive] = useState(false);
 
   return (
     <motion.div 
-      variants={fadeUp} 
-      whileHover={{ 
-        scale: 1.05, 
-        y: -10, 
-        rotate: [0, -3, 3, -3, 2, 0],
-        transition: { duration: 0.5 }
-      }} 
+      variants={fadeUp} whileHover={{ scale: 1.05, y: -10, rotate: [0, -3, 3, -3, 2, 0], transition: { duration: 0.5 } }} 
       className="glass-frame p-2 aspect-[3/4] flex flex-col cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(255,20,147,0.3)] relative overflow-hidden group border-white/80 w-full max-w-[300px] mx-auto transition-shadow"
-      onMouseEnter={() => setIsActive(true)}
-      onMouseLeave={() => setIsActive(false)}
-      onClick={() => onClick(role)}
+      onMouseEnter={() => setIsActive(true)} onMouseLeave={() => setIsActive(false)} onClick={() => onClick(role)}
     >
       <div className="w-full h-full rounded-xl relative overflow-hidden bg-slate-100 flex items-center justify-center">
         <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 z-0 pointer-events-none">
           <Camera size={32} />
         </div>
-
-        <img 
-          src={role.draw} 
-          loading="lazy" 
-          decoding="async" 
-          width={300} 
-          height={400} 
-          className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" 
-          alt="Розмальовка" 
-        />
-        
+        <img src={role.draw} loading="lazy" decoding="async" width={300} height={400} className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" alt="Розмальовка" />
         <motion.div 
-          initial={{ clipPath: "inset(0 0 0 0)" }}
-          animate={{ clipPath: isActive ? "inset(0 100% 0 0)" : "inset(0 0 0 0)" }}
-          transition={{ duration: 0.5, ease: "easeInOut" }} 
-          className="absolute inset-0 z-20 pointer-events-none"
+          initial={{ clipPath: "inset(0 0 0 0)" }} animate={{ clipPath: isActive ? "inset(0 100% 0 0)" : "inset(0 0 0 0)" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }} className="absolute inset-0 z-20 pointer-events-none"
         >
-          <img 
-            src={role.orig} 
-            loading="lazy" 
-            decoding="async" 
-            width={300} 
-            height={400} 
-            className="w-full h-full object-cover pointer-events-none" 
-            alt="Оригінал" 
-          />
+          <img src={role.orig} loading="lazy" decoding="async" width={300} height={400} className="w-full h-full object-cover pointer-events-none" alt="Оригінал" />
         </motion.div>
       </div>
     </motion.div>
   );
 };
 
-// === КОМПОНЕНТ FAQ ===
 const FaqItem = ({ faq, isOpen, onClick }) => {
   return (
     <motion.div 
@@ -341,12 +262,7 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
       </div>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
             <div className="p-5 pt-0 text-slate-600 font-medium leading-relaxed border-t border-slate-100/50 mt-1">
               {faq.a}
             </div>
@@ -357,14 +273,10 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
   );
 };
 
-// === МОДАЛЬНЕ ВІКНО ОФОРМЛЕННЯ ЗАМОВЛЕННЯ ===
 const OrderModal = ({ isOpen, onClose }) => {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
@@ -372,78 +284,40 @@ const OrderModal = ({ isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={springConfig}
-            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={springConfig} onClick={(e) => e.stopPropagation()}
             className="bg-[#F8F9FA] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
           >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors"
-            >
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors">
               <X size={20} />
             </button>
-
             <div className="w-20 h-20 bg-[#FF1493]/10 text-[#FF1493] rounded-full flex items-center justify-center mb-5 shadow-inner">
               <MessageCircleHeart size={40} />
             </div>
-
             <h3 className="text-2xl font-black text-slate-800 mb-2">Оформлення<br/>замовлення</h3>
             <p className="text-slate-600 font-medium mb-6 text-sm leading-relaxed">
               Ви можете оформити замовлення безпосередньо в месенджерах. Натисніть кнопку нижче, щоб перейти до нашого менеджера:
             </p>
-
             <div className="w-full flex flex-col gap-3 mb-6">
-              <a
-                href="https://instagram.com/my_rozm" 
-                target="_blank"
-                rel="noreferrer"
-                className="w-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#fd1d1d]/30 hover:scale-[1.02]"
-              >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-                Instagram
+              <a href="https://instagram.com/my_rozm" target="_blank" rel="noreferrer" className="w-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#fd1d1d]/30 hover:scale-[1.02]">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg> Instagram
               </a>
-
-              <a
-                href="https://t.me/my_rozm" 
-                target="_blank"
-                rel="noreferrer"
-                className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]"
-              >
+              <a href="https://t.me/my_rozm" target="_blank" rel="noreferrer" className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]">
                 <Send size={20} /> Telegram
               </a>
-
-              <a
-                href="viber://chat?number=%2B380931355348" 
-                target="_blank"
-                rel="noreferrer"
-                className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]"
-              >
+              <a href="viber://chat?number=%2B380931355348" target="_blank" rel="noreferrer" className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]">
                 <Phone size={20} /> Viber
               </a>
             </div>
-
             <div className="bg-white p-4 rounded-xl w-full space-y-3 border border-slate-200 shadow-sm">
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">⏱️</span> Виготовлення 1-2 дні
-              </p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">📦</span> Доставка НП (1-2 дні)
-              </p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">💳</span> Працюємо по повній передоплаті
-              </p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">⏱️</span> Виготовлення 1-2 дні</p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">📦</span> Доставка НП (1-2 дні)</p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">💳</span> Працюємо по повній передоплаті</p>
             </div>
           </motion.div>
         </motion.div>
@@ -460,9 +334,7 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -479,150 +351,71 @@ export default function App() {
   };
 
   return (
-    <div 
-      className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative"
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      
+    <div className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative" onContextMenu={(e) => e.preventDefault()}>
       <motion.div style={{ y: yBg1, willChange: "transform" }} className="absolute top-[10%] left-[-10%] w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] bg-gradient-to-br from-[#FF1493]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
       <motion.div style={{ y: yBg2, willChange: "transform" }} className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-gradient-to-bl from-[#FF5F15]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
 
       <CompareModal isOpen={!!selectedImageModal} onClose={() => setSelectedImageModal(null)} data={selectedImageModal} />
       <OrderModal isOpen={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} />
 
-      <motion.nav 
-        initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig}
-        className="fixed top-0 w-full z-50 pointer-events-none"
-      >
-        <motion.div 
-          initial={false}
-          animate={{ y: isScrolled ? -100 : 0, opacity: isScrolled ? 0 : 1 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="absolute inset-0 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm pointer-events-auto"
-        />
-
+      <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig} className="fixed top-0 w-full z-50 pointer-events-none">
+        <motion.div initial={false} animate={{ y: isScrolled ? -100 : 0, opacity: isScrolled ? 0 : 1 }} transition={{ duration: 0.4, ease: "easeInOut" }} className="absolute inset-0 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm pointer-events-auto" />
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative z-10">
-          
-          <motion.div 
-            initial={false}
-            animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className={`flex items-center gap-2 text-2xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}
-          >
-            <span className="text-[#FF5F15]">✏️ Моя</span> Розмальовка
+          <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`flex items-center gap-2 text-2xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+            <span className="text-[#e6500e]">✏️ Моя</span> Розмальовка
           </motion.div>
-
-          <motion.div 
-            initial={false}
-            animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }}
-            transition={{ duration: 0.3 }}
-            className={`hidden md:flex gap-8 font-bold text-sm text-slate-700 ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}
-          >
+          <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} className={`hidden md:flex gap-8 font-bold text-sm text-slate-700 ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
             <a href="#gallery" className="hover:text-[#FF1493] transition-all">Галерея</a>
             <a href="#about" className="hover:text-[#FF1493] transition-all">Для кого</a>
             <a href="#how-it-works" className="hover:text-[#FF1493] transition-all">Як працює</a>
           </motion.div>
-
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            animate={isScrolled ? {
-              rotate: [0, -5, 5, -5, 5, 0],
-              scale: [1, 1.05, 1],
-              boxShadow: ["0px 0px 0px rgba(255,20,147,0)", "0px 10px 25px rgba(255,20,147,0.5)", "0px 0px 0px rgba(255,20,147,0)"]
-            } : {
-              rotate: 0,
-              scale: 1,
-              boxShadow: "0 10px 15px -3px rgba(255,20,147,0.3)"
-            }}
-            transition={isScrolled ? { 
-              repeat: Infinity, 
-              duration: 1.5, 
-              repeatDelay: 2.5,
-              ease: "easeInOut"
-            } : { duration: 0.3 }}
-            onClick={() => setIsOrderModalOpen(true)}
-            className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto"
-          >
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} animate={isScrolled ? { rotate: [0, -5, 5, -5, 5, 0], scale: [1, 1.05, 1], boxShadow: ["0px 0px 0px rgba(255,20,147,0)", "0px 10px 25px rgba(255,20,147,0.5)", "0px 0px 0px rgba(255,20,147,0)"] } : { rotate: 0, scale: 1, boxShadow: "0 10px 15px -3px rgba(255,20,147,0.3)" }} transition={isScrolled ? { repeat: Infinity, duration: 1.5, repeatDelay: 2.5, ease: "easeInOut" } : { duration: 0.3 }} onClick={() => setIsOrderModalOpen(true)} className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto">
             Замовити
           </motion.button>
         </div>
       </motion.nav>
 
       <main className="max-w-7xl mx-auto px-4 pt-32 pb-16 lg:pt-40 relative z-10 shrink-0" id="order-section">
-        
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp}
-          style={{ y: yHero, willChange: "transform" }}
-          className="text-center max-w-4xl mx-auto mb-6 md:mb-16"
-        >
-        
+        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} style={{ y: yHero, willChange: "transform" }} className="text-center max-w-4xl mx-auto mb-6 md:mb-16">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 tracking-tight drop-shadow-sm">
             УНІКАЛЬНІ СТИЛЬНІ <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1493] to-[#FF5F15]">
-              РОЗМАЛЬОВКИ
-            </span> <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1493] to-[#FF5F15]">РОЗМАЛЬОВКИ</span> <br />
             З ВЛАСНИХ ФОТО
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed mb-6">
             Ми можемо <b className="text-slate-800">створити</b> розмальовку ідентично по вашому фото або ж перенести головного героя у світ фантазій. Будь-яка тематика за вашим бажанням!
           </p>
-
           <div className="flex justify-center gap-2 md:gap-6 mt-8 md:mt-10 text-[9px] sm:text-xs md:text-sm font-bold text-slate-700 w-full px-1">
-            
             <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
                 <Palette className="text-[#FF5F15] w-3.5 h-3.5 md:w-5 md:h-5" /> 
               </div>
               <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Вже створили 100+ розмальовок</span>
             </div>
-
             <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
                 <span className="text-[12px] md:text-xl leading-none">⏱️</span> 
               </div>
               <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Виготовлення від 1 до 3 днів!</span>
             </div>
-
           </div>
-
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-32 items-center max-w-6xl mx-auto">
-          
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeRight}
-            className="relative w-full max-w-[550px] mx-auto"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeRight} className="relative w-full max-w-[550px] mx-auto">
             <HeroCarousel />
           </motion.div>
-
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeLeft}
-            className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-white/80 border-white/60 mx-auto max-w-lg lg:max-w-xl"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeLeft} className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-white/80 border-white/60 mx-auto max-w-lg lg:max-w-xl">
             <div className="text-center mb-8 relative z-10">
               <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">СТВОРИ ЗАРАЗ</h2>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Оберіть об'єм</p>
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Оберіть об'єм</p>
             </div>
-
             <div className="space-y-4 mb-4 relative z-10">
               {[9, 14, 23].map((num) => (
-                <motion.button
-                  whileHover={{ scale: 1.02, x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                  key={num}
-                  onClick={() => setSelectedPages(num)}
-                  className={`w-full flex flex-col p-4 md:p-5 rounded-2xl border-2 transition-colors duration-300 relative ${
-                    selectedPages === num 
-                      ? 'border-[#FF5F15] bg-white shadow-xl scale-[1.02]' 
-                      : 'border-white/80 hover:border-[#FF5F15]/50 bg-white/60 hover:bg-white'
-                  }`}
-                >
+                <motion.button key={num} whileHover={{ scale: 1.02, x: 5 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedPages(num)} className={`w-full flex flex-col p-4 md:p-5 rounded-2xl border-2 transition-colors duration-300 relative ${selectedPages === num ? 'border-[#FF5F15] bg-white shadow-xl scale-[1.02]' : 'border-white/80 hover:border-[#FF5F15]/50 bg-white/60 hover:bg-white'}`}>
                   <div className="flex items-center justify-between w-full">
                     {selectedPages === num && (
-                      <motion.div layoutId="badge" className="absolute -top-3 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-[11px] uppercase font-black px-3 py-1 rounded-full shadow-lg">
+                      <motion.div layoutId="badge" className="absolute -top-3 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[11px] uppercase font-black px-3 py-1 rounded-full shadow-lg">
                         {prices[num].label}
                       </motion.div>
                     )}
@@ -631,105 +424,66 @@ export default function App() {
                       {num} арк.
                     </span>
                     <div className="text-right">
-                      <span className="text-xs font-bold text-slate-400 line-through block mb-[-2px]">{prices[num].old} ₴</span>
+                      <span className="text-xs font-bold text-slate-500 line-through block mb-[-2px]">{prices[num].old} ₴</span>
                       <span className="text-xl md:text-2xl font-black text-slate-900">{prices[num].new} <span className="text-base">₴</span></span>
                     </div>
                   </div>
-
                   <AnimatePresence>
                     {selectedPages === num && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }} 
-                        animate={{ height: 'auto', opacity: 1 }} 
-                        exit={{ height: 0, opacity: 0 }} 
-                        className="mt-3 pt-3 border-t border-slate-100/50 w-full overflow-hidden text-left"
-                      >
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-3 pt-3 border-t border-slate-100/50 w-full overflow-hidden text-left">
                         <ul className="text-xs md:text-sm text-slate-600 space-y-2 font-medium">
-                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500 shrink-0"/> Формат А4, преміум-папір</li>
-                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500 shrink-0"/> Кольорова обкладинка на спіралі</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-600 shrink-0"/> Формат А4, преміум-папір</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-600 shrink-0"/> Кольорова обкладинка на спіралі</li>
                           <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#FF1493] shrink-0"/> <b>{num} ваших фото</b>, перетворених у розмальовку</li>
                         </ul>
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                 </motion.button>
               ))}
             </div>
-
-            {/* БЛОК БЕЗПЕЧНОЇ ОПЛАТИ */}
             <div className="flex flex-col items-center justify-center gap-2.5 mb-6 mt-2 relative z-10">
-              <div className="flex items-center gap-1.5 text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-                <ShieldCheck size={16} className="text-green-500" />
-                Гарантія безпечної оплати
+              <div className="flex items-center gap-1.5 text-slate-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                <ShieldCheck size={16} className="text-green-600" /> Гарантія безпечної оплати
               </div>
             </div>
-
-            <motion.button 
-              whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsOrderModalOpen(true)}
-              className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4"
-            >
-              ЗАМОВИТИ РОЗМАЛЬОВКУ
-              <ChevronRight size={26} className="shrink-0" />
+            <motion.button whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }} whileTap={{ scale: 0.95 }} onClick={() => setIsOrderModalOpen(true)} className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4">
+              ЗАМОВИТИ РОЗМАЛЬОВКУ <ChevronRight size={26} className="shrink-0" />
             </motion.button>
           </motion.div>
         </div>
       </main>
 
-      {/* ГАЛЕРЕЯ */}
       <section id="gallery" className="py-16 relative overflow-hidden shrink-0 z-10">
         <div className="max-w-7xl mx-auto px-0 md:px-4">
-          
           <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center mb-8 px-4">
             <h2 className="text-4xl md:text-5xl font-black mb-4">ІДЕЇ ДЛЯ <span className="text-[#FF1493]">НАТХНЕННЯ!</span></h2>
             <p className="text-base md:text-lg text-slate-700 font-semibold max-w-4xl mx-auto leading-relaxed">
               Ми можемо <b className="text-slate-900">створити розмальовку ідентично по вашому оригінальному фото</b>, дбайливо зберігши кожну деталь, або ж перенести головного героя у захопливий <b className="text-[#FF1493]">світ фантазій</b> (космос, казки, улюблені професії). Усі ідеї та побажання детально обговорюються перед початком роботи!
             </p>
           </motion.div>
-
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp}
-            className="flex justify-center w-full mb-8 px-4"
-          >
-            <motion.div 
-              animate={{ scale: [1, 1.03, 1], boxShadow: ["0 5px 15px rgba(255,20,147,0.1)", "0 15px 25px rgba(255,20,147,0.25)", "0 5px 15px rgba(255,20,147,0.1)"] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="bg-white/95 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap"
-            >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="flex justify-center w-full mb-8 px-4">
+            <motion.div animate={{ scale: [1, 1.03, 1], boxShadow: ["0 5px 15px rgba(255,20,147,0.1)", "0 15px 25px rgba(255,20,147,0.25)", "0 5px 15px rgba(255,20,147,0.1)"] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} className="bg-white/95 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
               <Sparkles className="text-[#FF5F15] shrink-0 w-4 h-4 md:w-5 md:h-5" /> 
-              <span className="text-[#FF1493] font-black tracking-widest uppercase text-[10px] md:text-sm whitespace-nowrap">
-                Натисни на фото, щоб побачити магію
-              </span>
+              <span className="text-[#FF1493] font-black tracking-widest uppercase text-[10px] md:text-sm whitespace-nowrap">Натисни на фото, щоб побачити магію</span>
               <span className="text-sm md:text-xl drop-shadow-md shrink-0">👇</span>
             </motion.div>
           </motion.div>
 
-          {/* Мобільна безкінечна 3D Карусель */}
           <div className="block md:hidden mb-10">
             <InfiniteMobileCarousel items={galleryData} onClick={setSelectedImageModal} />
           </div>
 
-          {/* ПК Сітка (Тепер 2 ряди по 4 фото) */}
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
-            className="hidden md:grid md:grid-cols-4 gap-8 max-w-[85rem] mx-auto px-4" 
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="hidden md:grid md:grid-cols-4 gap-8 max-w-[85rem] mx-auto px-4">
             {galleryData.map((role, idx) => (
               <GalleryItemPC key={idx} role={role} idx={idx} onClick={setSelectedImageModal} />
             ))}
           </motion.div>
-
         </div>
       </section>
 
-      {/* БЛОК: СІМЕЙНІ ТА ДЛЯ ДОРОСЛИХ */}
       <section id="about" className="pt-2 pb-12 relative z-10 shrink-0">
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp}
-          className="max-w-5xl mx-auto px-4"
-        >
+        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="max-w-5xl mx-auto px-4">
           <div className="glass-card bg-gradient-to-r from-white/95 to-white/80 rounded-[2rem] p-8 md:p-12 text-center shadow-xl border-white/80 relative overflow-hidden hover:shadow-2xl transition-shadow duration-500">
             <Heart className="absolute -top-10 -left-10 text-[#FF1493]/10" size={150} />
             <div className="relative z-10">
@@ -742,49 +496,28 @@ export default function App() {
         </motion.div>
       </section>
 
-      {/* ЯК ЦЕ ПРАЦЮЄ */}
       <section id="how-it-works" className="py-20 bg-white/50 backdrop-blur-md border-y border-white/50 shrink-0 relative">
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black text-center mb-16">
             ЯК МИ СТВОРЮЄМО <span className="text-[#FF5F15]">МАГІЮ</span>
           </motion.h2>
-          
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
               { icon: <Camera />, title: "1. Завантажте фото", desc: "Оберіть одне або кілька улюблених фотографій." },
               { icon: <MessageCircleHeart />, title: "2. Узгодження теми", desc: "Ми зв'яжемося з вами, щоб обрати бажаний стиль." },
               { icon: <Printer />, title: "3. Ми друкуємо", desc: "Наші майстри створюють контури та друкують." },
               { icon: <PackageOpen />, title: "4. Отримайте", desc: "Надійно пакуємо та швидко відправляємо поштою." }
             ].map((step, idx) => (
-              <motion.div 
-                key={idx} 
-                variants={fadeUp} 
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-white/90 backdrop-blur-sm border-2 border-white/60 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] hover:border-white/80 flex flex-col items-center justify-start group overflow-hidden z-10"
-              >
+              <motion.div key={idx} variants={fadeUp} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-white/90 backdrop-blur-sm border-2 border-white/60 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] hover:border-white/80 flex flex-col items-center justify-start group overflow-hidden z-10">
                 <div className="absolute top-10 left-1/2 -translate-x-1/2 w-24 h-24 bg-[#FF1493]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                <motion.div 
-                  whileHover={{ rotate: 8, scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                  className="relative w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-md shrink-0 z-10"
-                >
+                <motion.div whileHover={{ rotate: 8, scale: 1.1 }} transition={{ type: "spring", stiffness: 400, damping: 15 }} className="relative w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-md shrink-0 z-10">
                   {React.cloneElement(step.icon, { className: "w-7 h-7 md:w-9 md:h-9 drop-shadow-sm" })}
                 </motion.div>
-                
                 <div className="flex flex-col flex-1 w-full relative z-10">
                   <div className="min-h-[48px] md:min-h-[64px] flex items-center justify-center mb-2">
-                    <h3 className="text-base md:text-xl font-black text-slate-800 leading-tight group-hover:text-[#FF1493] transition-colors duration-300">
-                      {step.title}
-                    </h3>
+                    <h3 className="text-base md:text-xl font-black text-slate-800 leading-tight group-hover:text-[#FF1493] transition-colors duration-300">{step.title}</h3>
                   </div>
-                  <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed mt-auto transition-colors duration-300 group-hover:text-slate-800">
-                    {step.desc}
-                  </p>
+                  <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed mt-auto transition-colors duration-300 group-hover:text-slate-800">{step.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -792,51 +525,30 @@ export default function App() {
         </div>
       </section>
 
-      {/* FAQ (ЧАСТІ ПИТАННЯ) */}
       <section id="faq" className="py-20 shrink-0 relative z-10">
         <div className="max-w-4xl mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-black mb-4">ЧАСТІ <span className="text-[#FF1493]">ПИТАННЯ</span></h2>
             <p className="text-slate-600 font-medium">Зібрали відповіді на найпопулярніші запитання для вас</p>
           </motion.div>
-
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
-            className="flex flex-col gap-4"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="flex flex-col gap-4">
             {faqs.map((faq, idx) => (
-              <FaqItem 
-                key={idx} 
-                faq={faq} 
-                isOpen={openFaqIndex === idx} 
-                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} 
-              />
+              <FaqItem key={idx} faq={faq} isOpen={openFaqIndex === idx} onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} />
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ВІДГУКИ */}
       <section id="reviews" className="py-20 shrink-0">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black mb-12">
-            ЩАСЛИВІ КЛІЄНТИ
-          </motion.h2>
-          
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger}
-            className="grid md:grid-cols-3 gap-6"
-          >
+          <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black mb-12">ЩАСЛИВІ КЛІЄНТИ</motion.h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="grid md:grid-cols-3 gap-6">
             {[
               { name: "Олена М.", text: "Якість паперу супер, пружина міцна. Вся родина в захваті!" },
               { name: "Вікторія К.", text: "Зробили ідентично по нашому фото, вийшов крутий подарунок чоловіку." },
               { name: "Ірина С.", text: "Найкращий подарунок. Взяли максимальну на 23 аркуші, малюємо разом." }
             ].map((review, idx) => (
-              <motion.div 
-                key={idx} variants={fadeUp} 
-                whileHover={{ scale: 1.03, y: -5, rotate: idx % 2 === 0 ? 1 : -1 }}
-                className="glass-card rounded-[2rem] p-6 md:p-8 text-left bg-white/80 shadow-xl border-white/60"
-              >
+              <motion.div key={idx} variants={fadeUp} whileHover={{ scale: 1.03, y: -5, rotate: idx % 2 === 0 ? 1 : -1 }} className="glass-card rounded-[2rem] p-6 md:p-8 text-left bg-white/80 shadow-xl border-white/60">
                 <div className="flex text-[#FF5F15] mb-4 gap-1">
                   {[...Array(5)].map((_, i) => <Star key={i} size={20} fill="currentColor" />)}
                 </div>
@@ -848,7 +560,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* ПІДВАЛ */}
       <footer className="bg-white/80 backdrop-blur-lg border-t border-white/60 py-6 md:py-8 mt-auto shrink-0 w-full relative z-20">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
           <div className="font-black text-xl flex items-center gap-2">
@@ -857,7 +568,6 @@ export default function App() {
           <p className="text-slate-500 font-bold text-xs">© 2026 Всі права захищено.</p>
         </div>
       </footer>
-      
     </div>
   );
 }

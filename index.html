@@ -1,43 +1,27 @@
 <!doctype html>
 <html lang="uk">
   <head>
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18428325163"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'AW-18428325163');
-  gtag('config', 'G-PCRCMV5QS9');
-</script>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="be2c95de-3250-411c-9bb7-2b3d9e5ba94e"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Головні SEO теги -->
     <title>Моя розмальовка по фото | Друк персональних розмальовок на замовлення</title>
     <meta name="description" content="Створюємо унікальні стильні розмальовки з ваших фотографій. Друк персональних розмальовок на замовлення за 1-3 дні. Ідеальний подарунок для дітей та дорослих!" />
     <meta name="keywords" content="розмальовка по фото, персональні розмальовки, друк розмальовок, розмальовка на замовлення, подарунок, антистрес розмальовка" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://my-rozm.shop/" />
 
-    <!-- Open Graph (для гарних прев'ю в Telegram, Viber, Facebook) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://my-rozm.shop/" />
     <meta property="og:title" content="Моя розмальовка по фото | Друк персональних розмальовок" />
     <meta property="og:description" content="Створюємо унікальні стильні розмальовки з ваших фотографій. Виготовлення 1-3 дні. Замовляйте прямо зараз!" />
     <meta property="og:image" content="https://my-rozm.shop/baner.png" />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Моя розмальовка по фото" />
     <meta name="twitter:description" content="Унікальні стильні розмальовки з ваших фотографій на замовлення." />
     <meta name="twitter:image" content="https://my-rozm.shop/baner.png" />
 
-    <!-- Секретна мікророзмітка Schema.org (Google обожнює це) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -63,5 +47,32 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- ВІДКЛАДЕНЕ ЗАВАНТАЖЕННЯ АНАЛІТИКИ (Вирішує проблему Total Blocking Time) -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          // Запуск Google Tag Manager
+          var gtagScript = document.createElement('script');
+          gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=AW-18428325163";
+          gtagScript.async = true;
+          document.head.appendChild(gtagScript);
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+          gtag('config', 'AW-18428325163');
+          gtag('config', 'G-PCRCMV5QS9');
+
+          // Запуск Umami Analytics
+          var umamiScript = document.createElement('script');
+          umamiScript.src = "https://cloud.umami.is/script.js";
+          umamiScript.defer = true;
+          umamiScript.setAttribute('data-website-id', 'be2c95de-3250-411c-9bb7-2b3d9e5ba94e');
+          document.head.appendChild(umamiScript);
+        }, 3500); // Затримка 3.5 секунди не заважатиме обліку, але розвантажить старт
+      });
+    </script>
   </body>
 </html>
