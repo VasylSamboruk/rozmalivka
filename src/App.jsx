@@ -4,7 +4,7 @@ import {
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
   X, ChevronsLeftRight, Heart, CheckCircle2, ChevronDown,
-  Send, Phone, ShieldCheck // <--- ДОДАНО ShieldCheck
+  Send, Phone, ShieldCheck
 } from 'lucide-react';
 
 
@@ -59,7 +59,8 @@ const faqs = [
 
 // === АВТОМАТИЧНА 3D КАРУСЕЛЬ ГОЛОВНОГО ЕКРАНУ ===
 const HeroCarousel = () => {
-  const images = ['/image.png', '/1image.png', '/2image.png'];
+  // Оптимізовані WebP-файли
+  const images = ['/image.webp', '/1image.webp', '/2image.webp'];
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -104,6 +105,10 @@ const HeroCarousel = () => {
             <img
               src={img}
               alt="Журнал"
+              width={450}
+              height={480}
+              fetchpriority={isCenter ? "high" : "auto"}
+              decoding="async"
               className="w-[280px] md:w-[450px] h-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)] relative z-10"
             />
             
@@ -183,13 +188,13 @@ const CompareModal = ({ isOpen, onClose, data }) => {
             onMouseMove={handleMove}
             onTouchMove={handleMove}
           >
-            <img src={data.draw} decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Розмальовка" />
+            <img src={data.draw} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Розмальовка" />
             
             <div 
               className="absolute inset-0 overflow-hidden pointer-events-none border-r-2 border-white/80 shadow-[2px_0_10px_rgba(0,0,0,0.5)]"
               style={{ width: `${position}%` }}
             >
-              <img src={data.orig} decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" style={{ width: '100vw', maxWidth: containerRef.current?.offsetWidth || '100%' }} alt="Оригінал" />
+              <img src={data.orig} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" style={{ width: '100vw', maxWidth: containerRef.current?.offsetWidth || '100%' }} alt="Оригінал" />
             </div>
             
             <div 
@@ -246,7 +251,15 @@ const InfiniteMobileCarousel = ({ items, onClick }) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 z-0 pointer-events-none">
           <Camera size={32} />
         </div>
-        <img src={item.orig} decoding="async" className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" alt={item.text} />
+        <img 
+          src={item.orig} 
+          loading="lazy" 
+          decoding="async" 
+          width={280} 
+          height={373} 
+          className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" 
+          alt={item.text} 
+        />
       </motion.div>
     );
   }
@@ -281,7 +294,15 @@ const GalleryItemPC = ({ role, idx, onClick }) => {
           <Camera size={32} />
         </div>
 
-        <img src={role.draw} decoding="async" className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" alt="Розмальовка" />
+        <img 
+          src={role.draw} 
+          loading="lazy" 
+          decoding="async" 
+          width={300} 
+          height={400} 
+          className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" 
+          alt="Розмальовка" 
+        />
         
         <motion.div 
           initial={{ clipPath: "inset(0 0 0 0)" }}
@@ -289,7 +310,15 @@ const GalleryItemPC = ({ role, idx, onClick }) => {
           transition={{ duration: 0.5, ease: "easeInOut" }} 
           className="absolute inset-0 z-20 pointer-events-none"
         >
-          <img src={role.orig} decoding="async" className="w-full h-full object-cover pointer-events-none" alt="Оригінал" />
+          <img 
+            src={role.orig} 
+            loading="lazy" 
+            decoding="async" 
+            width={300} 
+            height={400} 
+            className="w-full h-full object-cover pointer-events-none" 
+            alt="Оригінал" 
+          />
         </motion.div>
       </div>
     </motion.div>
@@ -339,7 +368,7 @@ const OrderModal = ({ isOpen, onClose }) => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-return (
+  return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -474,7 +503,6 @@ export default function App() {
 
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative z-10">
           
-          {/* Логотип зі збереженим оригінальним розміром (text-2xl) */}
           <motion.div 
             initial={false}
             animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }}
@@ -496,7 +524,6 @@ export default function App() {
             <a href="#how-it-works" className="hover:text-[#FF1493] transition-all">Як працює</a>
           </motion.div>
 
-          {/* Кнопка з оригінальними відступами (px-6 py-2.5) */}
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -636,7 +663,6 @@ export default function App() {
                 <ShieldCheck size={16} className="text-green-500" />
                 Гарантія безпечної оплати
               </div>
-          
             </div>
 
             <motion.button 
@@ -740,7 +766,6 @@ export default function App() {
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-white/90 backdrop-blur-sm border-2 border-white/60 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] hover:border-white/80 flex flex-col items-center justify-start group overflow-hidden z-10"
               >
-                {/* Магічне світіння на фоні іконки при наведенні */}
                 <div className="absolute top-10 left-1/2 -translate-x-1/2 w-24 h-24 bg-[#FF1493]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                 <motion.div 
