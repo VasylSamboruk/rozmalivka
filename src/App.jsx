@@ -273,51 +273,106 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
   );
 };
 
+// === МОДАЛЬНЕ ВІКНО ОФОРМЛЕННЯ ЗАМОВЛЕННЯ З ТРЕКІНГОМ ПІКСЕЛЯ ===
 const OrderModal = ({ isOpen, onClose }) => {
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
+
+  // Відправка події Lead у Meta Pixel
+  const trackContactClick = (channel) => {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'Lead', {
+        content_name: channel,
+        currency: 'UAH'
+      });
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }}
           className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={springConfig} onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={springConfig}
+            onClick={(e) => e.stopPropagation()}
             className="bg-[#F8F9FA] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
           >
-            <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors"
+            >
               <X size={20} />
             </button>
+
             <div className="w-20 h-20 bg-[#FF1493]/10 text-[#FF1493] rounded-full flex items-center justify-center mb-5 shadow-inner">
               <MessageCircleHeart size={40} />
             </div>
+
             <h3 className="text-2xl font-black text-slate-800 mb-2">Оформлення<br/>замовлення</h3>
             <p className="text-slate-600 font-medium mb-6 text-sm leading-relaxed">
               Ви можете оформити замовлення безпосередньо в месенджерах. Натисніть кнопку нижче, щоб перейти до нашого менеджера:
             </p>
+
             <div className="w-full flex flex-col gap-3 mb-6">
-              <a href="https://instagram.com/my_rozm" target="_blank" rel="noreferrer" className="w-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#fd1d1d]/30 hover:scale-[1.02]">
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg> Instagram
+              <a
+                href="https://instagram.com/my_rozm" 
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackContactClick('Instagram')}
+                className="w-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#fd1d1d]/30 hover:scale-[1.02]"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+                Instagram
               </a>
-              <a href="https://t.me/my_rozm" target="_blank" rel="noreferrer" className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]">
+
+              <a
+                href="https://t.me/my_rozm" 
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackContactClick('Telegram')}
+                className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]"
+              >
                 <Send size={20} /> Telegram
               </a>
-              <a href="viber://chat?number=%2B380931355348" target="_blank" rel="noreferrer" className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]">
+
+              <a
+                href="viber://chat?number=%2B380931355348" 
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackContactClick('Viber')}
+                className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]"
+              >
                 <Phone size={20} /> Viber
               </a>
             </div>
+
             <div className="bg-white p-4 rounded-xl w-full space-y-3 border border-slate-200 shadow-sm">
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">⏱️</span> Виготовлення 1-2 дні</p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">📦</span> Доставка НП (1-2 дні)</p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2"><span className="text-base">💳</span> Працюємо по повній передоплаті</p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">⏱️</span> Виготовлення 1-2 дні
+              </p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">📦</span> Доставка НП (1-2 дні)
+              </p>
+              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
+                <span className="text-base">💳</span> Працюємо по повній передоплаті
+              </p>
             </div>
           </motion.div>
         </motion.div>
