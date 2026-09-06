@@ -1,11 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { 
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
   X, ChevronsLeftRight, Heart, CheckCircle2, ChevronDown,
-  Send, Phone, ShieldCheck
+  Send, Phone, ShieldCheck, MessageSquarePlus
 } from 'lucide-react';
+
+// === НАЛАШТУВАННЯ TELEGRAM БОТА ===
+const TELEGRAM_BOT_TOKEN = '8973709125:AAFC2nc51oMaIZVk78z8hWizozBcSmS52lI';
+const TELEGRAM_CHAT_ID = '8844188635';
+
+// Функція точного запуску конфеті прямо з натиснутої кнопки поверх усіх вікон
+// Точний салют із точки кліку (пальця/мишки) на кнопці
+const fireConfetti = () => {
+  confetti({
+    particleCount: 100,
+    spread: 100,
+    startVelocity: 45,
+    origin: { x: 0.5, y: 0.5 },
+    zIndex: 9999,
+    colors: ['#FF1493', '#FF5F15', '#FFD700', '#00C9FF', '#92FE9D']
+  });
+};
 
 const springConfig = { type: "spring", stiffness: 80, damping: 15, mass: 0.8 };
 const bounceConfig = { type: "spring", stiffness: 120, damping: 12, bounce: 0.4 };
@@ -54,7 +72,7 @@ const faqs = [
 ];
 
 const HeroCarousel = () => {
-  const images = ['/image.webp', '/1image.webp', '/2image.webp'];
+  const images = ['/image.webp', '/1image.webp', '/2image.webp', '/3image.webp'];
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -73,23 +91,57 @@ const HeroCarousel = () => {
       />
       {images.map((img, index) => {
         let offset = index - activeIndex;
-        if (offset === -2) offset = 1;
-        if (offset === 2) offset = -1;
+        const len = images.length;
+        if (offset > len / 2) offset -= len;
+        if (offset < -len / 2) offset += len;
 
         const isCenter = offset === 0;
-        const xOffset = window.innerWidth < 768 ? 85 : 180;
+        
+        let xPos = 0;
+        let yPos = 0;
+        let scaleVal = 1;
+        let zIdx = 10;
+        let opacityVal = 1;
+
+        const xDist = window.innerWidth < 768 ? 70 : 130;
+
+        if (isCenter) {
+          xPos = 0;
+          yPos = 35; 
+          scaleVal = 1;
+          zIdx = 30;
+          opacityVal = 1;
+        } else if (offset === 1) {
+          xPos = xDist;
+          yPos = 0;
+          scaleVal = 0.85;
+          zIdx = 20;
+          opacityVal = 0.85;
+        } else if (offset === -1) {
+          xPos = -xDist;
+          yPos = 0;
+          scaleVal = 0.85;
+          zIdx = 20;
+          opacityVal = 0.85;
+        } else {
+          xPos = 0;
+          yPos = -30;
+          scaleVal = 0.7;
+          zIdx = 5;
+          opacityVal = 0.5;
+        }
 
         return (
           <motion.div
             key={img}
             initial={false}
             animate={{
-              x: offset * xOffset,
-              scale: isCenter ? 1 : 0.85,
-              zIndex: isCenter ? 30 : 10,
-              opacity: isCenter ? 1 : 0.6,
-              rotateY: offset * -20,
-              y: isCenter ? 0 : 25 
+              x: xPos,
+              y: yPos,
+              scale: scaleVal,
+              zIndex: zIdx,
+              opacity: opacityVal,
+              rotateY: offset * -10
             }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className="absolute flex flex-col items-center justify-center pointer-events-none"
@@ -102,9 +154,9 @@ const HeroCarousel = () => {
               fetchPriority={index === 0 ? "high" : "auto"}
               loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
-              className="w-[280px] md:w-[450px] h-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)] relative z-10"
+              className="w-[230px] md:w-[360px] h-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.3)] relative z-10"
             />
-            <div className="absolute -bottom-6 md:-bottom-10 w-[220px] md:w-[360px] h-[15px] md:h-[20px] bg-slate-900/50 rounded-[100%] blur-[12px] z-0" />
+            <div className="absolute -bottom-6 md:-bottom-10 w-[170px] md:w-[280px] h-[15px] md:h-[20px] bg-slate-900/40 rounded-[100%] blur-[12px] z-0" />
           </motion.div>
         );
       })}
@@ -251,11 +303,11 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
   return (
     <motion.div 
       variants={fadeUp}
-      className={`glass-card border-2 transition-colors duration-300 rounded-2xl overflow-hidden cursor-pointer ${isOpen ? 'border-[#FF5F15] bg-white/90 shadow-md' : 'border-white/60 bg-white/60 hover:bg-white/80'}`}
+      className={`border-2 transition-colors duration-300 rounded-2xl overflow-hidden cursor-pointer ${isOpen ? 'border-[#FF5F15] bg-white shadow-md' : 'border-white bg-white hover:bg-slate-50'}`}
       onClick={onClick}
     >
       <div className="p-5 flex justify-between items-center gap-4">
-        <h3 className="font-black text-slate-800 text-base md:text-lg">{faq.q}</h3>
+        <h3 className="font-black text-slate-800 text-sm md:text-base leading-snug">{faq.q}</h3>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="text-[#FF1493] shrink-0">
           <ChevronDown size={24} />
         </motion.div>
@@ -263,7 +315,7 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
-            <div className="p-5 pt-0 text-slate-600 font-medium leading-relaxed border-t border-slate-100/50 mt-1">
+            <div className="p-5 pt-0 text-slate-600 font-medium leading-relaxed border-t border-slate-100 mt-1">
               {faq.a}
             </div>
           </motion.div>
@@ -273,24 +325,59 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
   );
 };
 
-// === МОДАЛЬНЕ ВІКНО ОФОРМЛЕННЯ ЗАМОВЛЕННЯ З ТРЕКІНГОМ ПІКСЕЛЯ ===
+// === МОДАЛЬНЕ ВІКНО "ЗАМОВИТИ" ===
 const OrderModal = ({ isOpen, onClose }) => {
+  const [contact, setContact] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      setSuccess(false);
+      setContact('');
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  // Відправка події Lead у Meta Pixel
-  const trackContactClick = (channel) => {
+  const trackContactClick = (channel, e) => {
+    fireConfetti(e);
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'Lead', {
         content_name: channel,
         currency: 'UAH'
       });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!contact.trim()) return;
+
+    fireConfetti(e);
+    setIsSubmitting(true);
+    const message = `📞 <b>Нова заявка на дзвінок/зв'язок!</b>\n\n👤 <b>Контакт (номер або нік):</b> ${contact}`;
+
+    try {
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+      setSuccess(true);
+      setTimeout(() => {
+        onClose();
+      }, 3000);
+    } catch (error) {
+      console.error("Помилка відправки:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -310,7 +397,7 @@ const OrderModal = ({ isOpen, onClose }) => {
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={springConfig}
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#F8F9FA] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
+            className="bg-[#ECEEF1] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
           >
             <button
               onClick={onClose}
@@ -333,7 +420,7 @@ const OrderModal = ({ isOpen, onClose }) => {
                 href="https://instagram.com/my_rozm" 
                 target="_blank"
                 rel="noreferrer"
-                onClick={() => trackContactClick('Instagram')}
+                onClick={(e) => trackContactClick('Instagram', e)}
                 className="w-full bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#fd1d1d]/30 hover:scale-[1.02]"
               >
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -346,7 +433,7 @@ const OrderModal = ({ isOpen, onClose }) => {
                 href="https://t.me/my_rozm" 
                 target="_blank"
                 rel="noreferrer"
-                onClick={() => trackContactClick('Telegram')}
+                onClick={(e) => trackContactClick('Telegram', e)}
                 className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0088cc]/30 hover:scale-[1.02]"
               >
                 <Send size={20} /> Telegram
@@ -356,24 +443,163 @@ const OrderModal = ({ isOpen, onClose }) => {
                 href="viber://chat?number=%2B380931355348" 
                 target="_blank"
                 rel="noreferrer"
-                onClick={() => trackContactClick('Viber')}
+                onClick={(e) => trackContactClick('Viber', e)}
                 className="w-full bg-[#7360F2] hover:bg-[#5d4be6] text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#7360F2]/30 hover:scale-[1.02]"
               >
                 <Phone size={20} /> Viber
               </a>
             </div>
 
-            <div className="bg-white p-4 rounded-xl w-full space-y-3 border border-slate-200 shadow-sm">
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">⏱️</span> Виготовлення 1-2 дні
+            {/* БЛОК ЗВ'ЯЗКУ */}
+            <div className="w-full relative mt-2 pt-6 border-t border-slate-200">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ECEEF1] px-3 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Або
+              </div>
+              <p className="text-slate-600 font-medium mb-3 text-xs md:text-sm">
+                Залиште свій номер або нікнейм, і ми зв'яжемося з вами:
               </p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">📦</span> Доставка НП (1-2 дні)
-              </p>
-              <p className="text-xs text-slate-700 font-bold flex items-center justify-center gap-2">
-                <span className="text-base">💳</span> Працюємо по повній передоплаті
-              </p>
+              
+              {success ? (
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-green-100 text-green-600 p-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm border border-green-200">
+                  <CheckCircle2 size={18} /> Заявку прийнято!
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex gap-2 w-full">
+                  <input 
+                    type="text" 
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    placeholder="+380... або @telegram"
+                    required
+                    className="w-full bg-white border border-slate-200 text-slate-800 font-medium py-3 px-4 rounded-xl outline-none focus:border-[#FF5F15] focus:ring-2 focus:ring-[#FF5F15]/20 transition-all shadow-sm text-sm"
+                  />
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }} 
+                    disabled={isSubmitting}
+                    className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-5 rounded-xl shadow-md flex items-center justify-center shrink-0 disabled:opacity-70"
+                  >
+                    {isSubmitting ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" /> : <Send size={18} />}
+                  </motion.button>
+                </form>
+              )}
             </div>
+
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// === МОДАЛЬНЕ ВІКНО ДЛЯ ВІДГУКІВ ===
+const ReviewModal = ({ isOpen, onClose }) => {
+  const [name, setName] = useState('');
+  const [review, setReview] = useState('');
+  const [rating, setRating] = useState(5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      setSuccess(false);
+      setName('');
+      setReview('');
+      setRating(5);
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name.trim() || !review.trim()) return;
+
+    fireConfetti(e);
+    setIsSubmitting(true);
+    const message = `✨ <b>Новий відгук!</b>\n\n👤 <b>Ім'я:</b> ${name}\n⭐️ <b>Оцінка:</b> ${rating}/5\n💬 <b>Відгук:</b> ${review}`;
+
+    try {
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+      setSuccess(true);
+      setTimeout(() => onClose(), 2500);
+    } catch (error) {
+      console.error("Помилка відправки:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={springConfig}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#ECEEF1] rounded-[2rem] p-6 md:p-8 w-full max-w-[400px] relative shadow-2xl flex flex-col items-center text-center border-2 border-white"
+          >
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-200/50 hover:bg-slate-200 p-2 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+
+            {success ? (
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center justify-center py-8">
+                <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                  <CheckCircle2 size={40} />
+                </div>
+                <h3 className="text-2xl font-black text-slate-800 mb-2">Дякуємо!</h3>
+                <p className="text-slate-600 font-medium text-sm">Ваш відгук успішно відправлено.</p>
+              </motion.div>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-[#FF5F15]/10 text-[#FF5F15] rounded-full flex items-center justify-center mb-5 shadow-inner">
+                  <MessageSquarePlus size={40} />
+                </div>
+                <h3 className="text-2xl font-black text-slate-800 mb-2">Залишити відгук</h3>
+                <p className="text-slate-600 font-medium mb-6 text-sm leading-relaxed">Поділіться своїми враженнями від нашої розмальовки!</p>
+                
+                <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+                  <div className="flex justify-center gap-1 my-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button key={star} type="button" onClick={() => setRating(star)} className={`transition-colors duration-300 ${rating >= star ? 'text-[#FF5F15]' : 'text-slate-300 hover:text-slate-400'}`}>
+                        <Star size={32} fill={rating >= star ? "currentColor" : "none"} />
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="relative">
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше ім'я" required className="w-full bg-white border border-slate-200 text-slate-800 font-medium py-3.5 px-4 rounded-xl outline-none focus:border-[#FF5F15] focus:ring-2 focus:ring-[#FF5F15]/20 transition-all shadow-sm" />
+                  </div>
+                  
+                  <div className="relative">
+                    <textarea value={review} onChange={(e) => setReview(e.target.value)} placeholder="Напишіть ваш відгук тут..." rows={3} required className="w-full bg-white border border-slate-200 text-slate-800 font-medium py-3 px-4 rounded-xl outline-none focus:border-[#FF5F15] focus:ring-2 focus:ring-[#FF5F15]/20 transition-all shadow-sm resize-none" />
+                  </div>
+                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} disabled={isSubmitting} className="w-full mt-2 bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white font-black py-4 rounded-xl shadow-lg shadow-[#FF1493]/30 flex items-center justify-center gap-2 transition-all disabled:opacity-70">
+                    {isSubmitting ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" /> : <>Відправити відгук <Send size={18} /></>}
+                  </motion.button>
+                </form>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
@@ -386,6 +612,7 @@ export default function App() {
   const [selectedImageModal, setSelectedImageModal] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -394,29 +621,52 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { scrollYProgress } = useScroll();
-  const yBg1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
-  const yBg2 = useTransform(scrollYProgress, [0, 1], [0, -300]);
-  const yHero = useTransform(scrollYProgress, [0, 1], [0, 150]);
-
   const prices = {
     9: { old: 500, new: 400, label: 'Lite' },
     14: { old: 620, new: 550, label: 'PRO' },
     23: { old: 1010, new: 700, label: 'Maximum' }
   };
 
+  const { scrollYProgress } = useScroll();
+  const bgOpacity = useTransform(scrollYProgress, [0, 1], [0.99, 0.35]); 
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.06]);       
+
   return (
-    <div className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative" onContextMenu={(e) => e.preventDefault()}>
-      <motion.div style={{ y: yBg1, willChange: "transform" }} className="absolute top-[10%] left-[-10%] w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] bg-gradient-to-br from-[#FF1493]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
-      <motion.div style={{ y: yBg2, willChange: "transform" }} className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-gradient-to-bl from-[#FF5F15]/10 to-transparent rounded-full blur-[80px] -z-10 pointer-events-none" />
+    <div className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative bg-[#ECEEF1]" onContextMenu={(e) => e.preventDefault()}>
+      
+      {/* Адаптивний фон з затемненням як на фото 2 */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <motion.div 
+          style={{ opacity: bgOpacity, scale: bgScale, willChange: "transform, opacity" }}
+          className="w-full h-full relative"
+        >
+          <img 
+            src="/fonik2.webp" 
+            alt="Фон" 
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover block md:hidden"
+          />
+          <img 
+            src="/fonik.webp" 
+            alt="Фон ПК" 
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover hidden md:block"
+          />
+          {/* Шар затемнення для ефекту фото 2 */}
+          <div className="absolute inset-0 bg-slate-900/10 backdrop-contrast-[1.05]" />
+        </motion.div>
+      </div>
 
       <CompareModal isOpen={!!selectedImageModal} onClose={() => setSelectedImageModal(null)} data={selectedImageModal} />
       <OrderModal isOpen={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} />
+      <ReviewModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} />
 
       <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig} className="fixed top-0 w-full z-50 pointer-events-none">
         <motion.div initial={false} animate={{ y: isScrolled ? -100 : 0, opacity: isScrolled ? 0 : 1 }} transition={{ duration: 0.4, ease: "easeInOut" }} className="absolute inset-0 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm pointer-events-auto" />
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative z-10">
-          <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`flex items-center gap-2 text-2xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+          <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`flex items-center gap-2 text-lg md:text-xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
             <span className="text-[#e6500e]">✏️ Моя</span> Розмальовка
           </motion.div>
           <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} className={`hidden md:flex gap-8 font-bold text-sm text-slate-700 ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
@@ -424,14 +674,24 @@ export default function App() {
             <a href="#about" className="hover:text-[#FF1493] transition-all">Для кого</a>
             <a href="#how-it-works" className="hover:text-[#FF1493] transition-all">Як працює</a>
           </motion.div>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} animate={isScrolled ? { rotate: [0, -5, 5, -5, 5, 0], scale: [1, 1.05, 1], boxShadow: ["0px 0px 0px rgba(255,20,147,0)", "0px 10px 25px rgba(255,20,147,0.5)", "0px 0px 0px rgba(255,20,147,0)"] } : { rotate: 0, scale: 1, boxShadow: "0 10px 15px -3px rgba(255,20,147,0.3)" }} transition={isScrolled ? { repeat: Infinity, duration: 1.5, repeatDelay: 2.5, ease: "easeInOut" } : { duration: 0.3 }} onClick={() => setIsOrderModalOpen(true)} className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto">
+          <motion.button 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            animate={isScrolled ? { rotate: [0, -5, 5, -5, 5, 0], scale: [1, 1.05, 1], boxShadow: ["0px 0px 0px rgba(255,20,147,0)", "0px 10px 25px rgba(255,20,147,0.5)", "0px 0px 0px rgba(255,20,147,0)"] } : { rotate: 0, scale: 1, boxShadow: "0 10px 15px -3px rgba(255,20,147,0.3)" }} 
+            transition={isScrolled ? { repeat: Infinity, duration: 1.5, repeatDelay: 2.5, ease: "easeInOut" } : { duration: 0.3 }} 
+            onClick={(e) => {
+              fireConfetti(e);
+              setIsOrderModalOpen(true);
+            }} 
+            className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto"
+          >
             Замовити
           </motion.button>
         </div>
       </motion.nav>
 
       <main className="max-w-7xl mx-auto px-4 pt-32 pb-16 lg:pt-40 relative z-10 shrink-0" id="order-section">
-        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} style={{ y: yHero, willChange: "transform" }} className="text-center max-w-4xl mx-auto mb-6 md:mb-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center max-w-4xl mx-auto mb-6 md:mb-16">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 tracking-tight drop-shadow-sm">
             УНІКАЛЬНІ СТИЛЬНІ <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1493] to-[#FF5F15]">РОЗМАЛЬОВКИ</span> <br />
@@ -441,13 +701,13 @@ export default function App() {
             Ми можемо <b className="text-slate-800">створити</b> розмальовку ідентично по вашому фото або ж перенести головного героя у світ фантазій. Будь-яка тематика за вашим бажанням!
           </p>
           <div className="flex justify-center gap-2 md:gap-6 mt-8 md:mt-10 text-[9px] sm:text-xs md:text-sm font-bold text-slate-700 w-full px-1">
-            <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
+            <div className="relative bg-slate-100/80 backdrop-blur-sm pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
                 <Palette className="text-[#FF5F15] w-3.5 h-3.5 md:w-5 md:h-5" /> 
               </div>
               <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Вже створили 100+ розмальовок</span>
             </div>
-            <div className="relative bg-white/80 pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
+            <div className="relative bg-slate-100/80 backdrop-blur-sm pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
                 <span className="text-[12px] md:text-xl leading-none">⏱️</span> 
               </div>
@@ -460,7 +720,7 @@ export default function App() {
           <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeRight} className="relative w-full max-w-[550px] mx-auto">
             <HeroCarousel />
           </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeLeft} className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-white/80 border-white/60 mx-auto max-w-lg lg:max-w-xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeLeft} className="glass-card rounded-[2.5rem] p-6 md:p-10 w-full relative overflow-hidden shadow-2xl bg-slate-100/80 backdrop-blur-md border-white/80 mx-auto max-w-lg lg:max-w-xl">
             <div className="text-center mb-8 relative z-10">
               <h2 className="text-3xl font-black mb-2 text-slate-800 tracking-tight">СТВОРИ ЗАРАЗ</h2>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Оберіть об'єм</p>
@@ -502,7 +762,15 @@ export default function App() {
                 <ShieldCheck size={16} className="text-green-600" /> Гарантія безпечної оплати
               </div>
             </div>
-            <motion.button whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }} whileTap={{ scale: 0.95 }} onClick={() => setIsOrderModalOpen(true)} className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4">
+            <motion.button 
+              whileHover={{ scale: 1.03, rotate: [-1, 1, -1, 0], boxShadow: "0 15px 30px -5px rgba(255, 95, 21, 0.5)" }} 
+              whileTap={{ scale: 0.95 }} 
+              onClick={(e) => {
+                fireConfetti(e);
+                setIsOrderModalOpen(true);
+              }} 
+              className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4"
+            >
               ЗАМОВИТИ РОЗМАЛЬОВКУ <ChevronRight size={26} className="shrink-0" />
             </motion.button>
           </motion.div>
@@ -518,7 +786,7 @@ export default function App() {
             </p>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="flex justify-center w-full mb-8 px-4">
-            <motion.div animate={{ scale: [1, 1.03, 1], boxShadow: ["0 5px 15px rgba(255,20,147,0.1)", "0 15px 25px rgba(255,20,147,0.25)", "0 5px 15px rgba(255,20,147,0.1)"] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} className="bg-white/95 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
+            <motion.div animate={{ scale: [1, 1.03, 1], boxShadow: ["0 5px 15px rgba(255,20,147,0.1)", "0 15px 25px rgba(255,20,147,0.25)", "0 5px 15px rgba(255,20,147,0.1)"] }} transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }} className="bg-slate-100/90 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full border-2 border-[#FF1493]/20 flex items-center justify-center gap-2 cursor-default whitespace-nowrap shadow-sm">
               <Sparkles className="text-[#FF5F15] shrink-0 w-4 h-4 md:w-5 md:h-5" /> 
               <span className="text-[#FF1493] font-black tracking-widest uppercase text-[10px] md:text-sm whitespace-nowrap">Натисни на фото, щоб побачити магію</span>
               <span className="text-sm md:text-xl drop-shadow-md shrink-0">👇</span>
@@ -539,7 +807,7 @@ export default function App() {
 
       <section id="about" className="pt-2 pb-12 relative z-10 shrink-0">
         <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="max-w-5xl mx-auto px-4">
-          <div className="glass-card bg-gradient-to-r from-white/95 to-white/80 rounded-[2rem] p-8 md:p-12 text-center shadow-xl border-white/80 relative overflow-hidden hover:shadow-2xl transition-shadow duration-500">
+          <div className="bg-slate-100/75 backdrop-blur-md rounded-[2rem] p-8 md:p-12 text-center shadow-xl border border-white/85 relative overflow-hidden hover:shadow-2xl transition-shadow duration-500">
             <Heart className="absolute -top-10 -left-10 text-[#FF1493]/10" size={150} />
             <div className="relative z-10">
               <h2 className="text-2xl md:text-4xl font-black mb-4 text-slate-800">НЕ ЛИШЕ ДЛЯ ДІТЕЙ 👨‍👩‍👧‍👦</h2>
@@ -551,7 +819,7 @@ export default function App() {
         </motion.div>
       </section>
 
-      <section id="how-it-works" className="py-20 bg-white/50 backdrop-blur-md border-y border-white/50 shrink-0 relative">
+      <section id="how-it-works" className="py-20 bg-slate-100/50 backdrop-blur-md border-y border-white/50 shrink-0 relative z-10">
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black text-center mb-16">
             ЯК МИ СТВОРЮЄМО <span className="text-[#FF5F15]">МАГІЮ</span>
@@ -563,11 +831,19 @@ export default function App() {
               { icon: <Printer />, title: "3. Ми друкуємо", desc: "Наші майстри створюють контури та друкують." },
               { icon: <PackageOpen />, title: "4. Отримайте", desc: "Надійно пакуємо та швидко відправляємо поштою." }
             ].map((step, idx) => (
-              <motion.div key={idx} variants={fadeUp} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-white/90 backdrop-blur-sm border-2 border-white/60 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] hover:border-white/80 flex flex-col items-center justify-start group overflow-hidden z-10">
+              <motion.div key={idx} variants={fadeUp} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className="relative h-full rounded-2xl md:rounded-[2rem] p-5 md:p-8 text-center bg-slate-100/80 backdrop-blur-sm border-2 border-white/80 shadow-lg hover:shadow-[0_20px_40px_rgba(255,20,147,0.15)] flex flex-col items-center justify-start group overflow-hidden z-10">
                 <div className="absolute top-10 left-1/2 -translate-x-1/2 w-24 h-24 bg-[#FF1493]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                <motion.div whileHover={{ rotate: 8, scale: 1.1 }} transition={{ type: "spring", stiffness: 400, damping: 15 }} className="relative w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-md shrink-0 z-10">
+                
+                <motion.div 
+                  whileInView={{ rotate: [0, -10, 10, -8, 8, -4, 4, 0] }} 
+                  viewport={{ once: false, amount: 0.5 }} 
+                  transition={{ duration: 0.8, delay: idx * 0.1 }}
+                  whileHover={{ scale: 1.1, rotate: [0, -5, 5, -5, 5, 0] }} 
+                  className="relative w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-[#FF1493] to-[#FF5F15] rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-md shrink-0 z-10"
+                >
                   {React.cloneElement(step.icon, { className: "w-7 h-7 md:w-9 md:h-9 drop-shadow-sm" })}
                 </motion.div>
+
                 <div className="flex flex-col flex-1 w-full relative z-10">
                   <div className="min-h-[48px] md:min-h-[64px] flex items-center justify-center mb-2">
                     <h3 className="text-base md:text-xl font-black text-slate-800 leading-tight group-hover:text-[#FF1493] transition-colors duration-300">{step.title}</h3>
@@ -586,7 +862,7 @@ export default function App() {
             <h2 className="text-3xl md:text-5xl font-black mb-4">ЧАСТІ <span className="text-[#FF1493]">ПИТАННЯ</span></h2>
             <p className="text-slate-600 font-medium">Зібрали відповіді на найпопулярніші запитання для вас</p>
           </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="flex flex-col gap-4">
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="flex flex-col gap-4 bg-slate-100/75 backdrop-blur-md p-6 md:p-8 rounded-[2.5rem] border border-white/85 shadow-lg">
             {faqs.map((faq, idx) => (
               <FaqItem key={idx} faq={faq} isOpen={openFaqIndex === idx} onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} />
             ))}
@@ -594,16 +870,16 @@ export default function App() {
         </div>
       </section>
 
-      <section id="reviews" className="py-20 shrink-0">
+      <section id="reviews" className="py-20 shrink-0 relative z-10">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black mb-12">ЩАСЛИВІ КЛІЄНТИ</motion.h2>
-          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="grid md:grid-cols-3 gap-6">
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="grid md:grid-cols-3 gap-6 mb-12">
             {[
               { name: "Олена М.", text: "Якість паперу супер, пружина міцна. Вся родина в захваті!" },
               { name: "Вікторія К.", text: "Зробили ідентично по нашому фото, вийшов крутий подарунок чоловіку." },
               { name: "Ірина С.", text: "Найкращий подарунок. Взяли максимальну на 23 аркуші, малюємо разом." }
             ].map((review, idx) => (
-              <motion.div key={idx} variants={fadeUp} whileHover={{ scale: 1.03, y: -5, rotate: idx % 2 === 0 ? 1 : -1 }} className="glass-card rounded-[2rem] p-6 md:p-8 text-left bg-white/80 shadow-xl border-white/60">
+              <motion.div key={idx} variants={fadeUp} whileHover={{ scale: 1.03, y: -5, rotate: idx % 2 === 0 ? 1 : -1 }} className="glass-card rounded-[2rem] p-6 md:p-8 text-left bg-slate-100/80 backdrop-blur-md shadow-xl border-white/80">
                 <div className="flex text-[#FF5F15] mb-4 gap-1">
                   {[...Array(5)].map((_, i) => <Star key={i} size={20} fill="currentColor" />)}
                 </div>
@@ -612,12 +888,27 @@ export default function App() {
               </motion.div>
             ))}
           </motion.div>
+          
+          {/* Кнопка "Залишити відгук" */}
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="flex justify-center">
+            <motion.button 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }} 
+              onClick={(e) => {
+                fireConfetti(e);
+                setIsReviewModalOpen(true);
+              }}
+              className="bg-white text-[#FF1493] border-2 border-[#FF1493]/20 hover:border-[#FF1493] px-8 py-3.5 rounded-full font-black shadow-md text-sm md:text-base tracking-wide flex items-center gap-2 transition-colors"
+            >
+              <MessageSquarePlus size={20} /> Залишити відгук
+            </motion.button>
+          </motion.div>
         </div>
       </section>
 
-      <footer className="bg-white/80 backdrop-blur-lg border-t border-white/60 py-6 md:py-8 mt-auto shrink-0 w-full relative z-20">
+      <footer className="bg-slate-100/80 backdrop-blur-lg border-t border-white/60 py-6 md:py-8 mt-auto shrink-0 w-full relative z-20">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
-          <div className="font-black text-xl flex items-center gap-2">
+          <div className="font-black text-xl flex items-center gap-2 text-slate-800">
             <span className="text-[#FF5F15]">✏️ Моя </span> Розмальовка
           </div>
           <p className="text-slate-500 font-bold text-xs">© 2026 Всі права захищено.</p>
