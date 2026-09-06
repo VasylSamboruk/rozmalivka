@@ -12,6 +12,29 @@ import {
 const TELEGRAM_BOT_TOKEN = '8973709125:AAFC2nc51oMaIZVk78z8hWizozBcSmS52lI';
 const TELEGRAM_CHAT_ID = '8844188635';
 
+// --- НОВА ФУНКЦІЯ ДЛЯ ВІДПРАВКИ КЛІКІВ ТА IP ---
+const sendClickToTelegram = async (buttonName) => {
+  try {
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json();
+    const userIP = ipData.ip;
+
+    const message = `🖱 <b>Клік по кнопці!</b>\n\n🔘 <b>Кнопка:</b> ${buttonName}\n🌐 <b>IP адреса:</b> ${userIP}`;
+
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (error) {
+    console.error("Помилка відправки кліку в Телеграм:", error);
+  }
+};
+
 // Функція точного запуску конфеті прямо з натиснутої кнопки поверх усіх вікон
 // Точний салют із точки кліку (пальця/мишки) на кнопці
 const fireConfetti = () => {
@@ -344,6 +367,10 @@ const OrderModal = ({ isOpen, onClose }) => {
 
   const trackContactClick = (channel, e) => {
     fireConfetti(e);
+    
+    // Новий рядок для відправки в Телеграм
+    sendClickToTelegram(channel);
+    
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'Lead', {
         content_name: channel,
@@ -681,6 +708,7 @@ export default function App() {
             transition={isScrolled ? { repeat: Infinity, duration: 1.5, repeatDelay: 2.5, ease: "easeInOut" } : { duration: 0.3 }} 
             onClick={(e) => {
               fireConfetti(e);
+              sendClickToTelegram("Навігація: Замовити");
               setIsOrderModalOpen(true);
             }} 
             className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#FF1493]/30 text-sm tracking-wide pointer-events-auto"
@@ -767,6 +795,7 @@ export default function App() {
               whileTap={{ scale: 0.95 }} 
               onClick={(e) => {
                 fireConfetti(e);
+                sendClickToTelegram("Блок цін: Замовити розмальовку");
                 setIsOrderModalOpen(true);
               }} 
               className="w-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-base md:text-lg font-black py-4 md:py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-2 relative z-10 tracking-wide whitespace-nowrap px-4"
