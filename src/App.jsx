@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { 
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
@@ -37,14 +36,22 @@ const sendClickToTelegram = async (buttonName) => {
 
 // Функція точного запуску конфеті прямо з натиснутої кнопки поверх усіх вікон
 // Точний салют із точки кліку (пальця/мишки) на кнопці
+// canvas-confetti завантажується динамічно (code-splitting), а не в основний бандл,
+// щоб не збільшувати початковий JS, який вантажиться при відкритті сайту.
+let confettiModulePromise = null;
 const fireConfetti = () => {
-  confetti({
-    particleCount: 100,
-    spread: 100,
-    startVelocity: 45,
-    origin: { x: 0.5, y: 0.5 },
-    zIndex: 9999,
-    colors: ['#FF1493', '#FF5F15', '#FFD700', '#00C9FF', '#92FE9D']
+  if (!confettiModulePromise) {
+    confettiModulePromise = import('canvas-confetti');
+  }
+  confettiModulePromise.then(({ default: confetti }) => {
+    confetti({
+      particleCount: 100,
+      spread: 100,
+      startVelocity: 45,
+      origin: { x: 0.5, y: 0.5 },
+      zIndex: 9999,
+      colors: ['#FF1493', '#FF5F15', '#FFD700', '#00C9FF', '#92FE9D']
+    });
   });
 };
 
@@ -94,9 +101,23 @@ const faqs = [
   { q: "Що робити, якщо результат не сподобався?", a: "Оскільки ми погоджуємо кожен макет перед друком, сюрпризів не буде. Якщо ж на етапі ескізу вам зовсім не сподобається напрямок, ми обов'язково переробимо його." }
 ];
 
+const HERO_IMAGES = ['/image.webp', '/1image.webp', '/2image.webp', '/3image.webp'];
+
 const HeroCarousel = () => {
-  const images = ['/image.webp', '/1image.webp', '/2image.webp', '/3image.webp'];
+  const images = HERO_IMAGES;
   const [activeIndex, setActiveIndex] = useState(0);
+  // Замість читання window.innerWidth на кожному рендері (що змушує браузер
+  // перераховувати layout), слухаємо зміну через matchMedia один раз.
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handleChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handleChange);
+    return () => mq.removeEventListener('change', handleChange);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -126,7 +147,7 @@ const HeroCarousel = () => {
         let zIdx = 10;
         let opacityVal = 1;
 
-        const xDist = window.innerWidth < 768 ? 70 : 130;
+        const xDist = isMobile ? 70 : 130;
 
         if (isCenter) {
           xPos = 0;
@@ -254,7 +275,7 @@ const CompareModal = ({ isOpen, onClose, data }) => {
   );
 };
 
-const InfiniteMobileCarousel = ({ items, onClick }) => {
+const InfiniteMobileCarousel = React.memo(({ items, onClick }) => {
   const [active, setActive] = useState(0);
 
   const handleDragEnd = (event, info) => {
@@ -295,9 +316,9 @@ const InfiniteMobileCarousel = ({ items, onClick }) => {
       {renderItems}
     </div>
   );
-};
+});
 
-const GalleryItemPC = ({ role, idx, onClick }) => {
+const GalleryItemPC = React.memo(({ role, idx, onClick }) => {
   const [isActive, setIsActive] = useState(false);
 
   return (
@@ -320,14 +341,14 @@ const GalleryItemPC = ({ role, idx, onClick }) => {
       </div>
     </motion.div>
   );
-};
+});
 
-const FaqItem = ({ faq, isOpen, onClick }) => {
+const FaqItem = React.memo(({ faq, isOpen, idx, onToggle }) => {
   return (
     <motion.div 
       variants={fadeUp}
       className={`border-2 transition-colors duration-300 rounded-2xl overflow-hidden cursor-pointer ${isOpen ? 'border-[#FF5F15] bg-white shadow-md' : 'border-white bg-white hover:bg-slate-50'}`}
-      onClick={onClick}
+      onClick={() => onToggle(idx)}
     >
       <div className="p-5 flex justify-between items-center gap-4">
         <h3 className="font-black text-slate-800 text-sm md:text-base leading-snug">{faq.q}</h3>
@@ -346,7 +367,7 @@ const FaqItem = ({ faq, isOpen, onClick }) => {
       </AnimatePresence>
     </motion.div>
   );
-};
+});
 
 // === МОДАЛЬНЕ ВІКНО "ЗАМОВИТИ" ===
 const OrderModal = ({ isOpen, onClose }) => {
@@ -648,11 +669,18 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const prices = {
+  // Стабільний колбек (не пересоздається на кожному рендері), щоб FaqItem,
+  // обгорнутий у React.memo, не перемальовувався даремно.
+  const toggleFaq = useCallback((idx) => {
+    setOpenFaqIndex((prev) => (prev === idx ? null : idx));
+  }, []);
+
+  // useMemo — об'єкт цін більше не створюється заново на кожен рендер.
+  const prices = useMemo(() => ({
     9: { old: 500, new: 400, label: 'Lite' },
     14: { old: 620, new: 550, label: 'PRO' },
     23: { old: 1010, new: 700, label: 'Maximum' }
-  };
+  }), []);
 
   const { scrollYProgress } = useScroll();
   const bgOpacity = useTransform(scrollYProgress, [0, 1], [0.99, 0.35]); 
@@ -667,20 +695,23 @@ export default function App() {
           style={{ opacity: bgOpacity, scale: bgScale, willChange: "transform, opacity" }}
           className="w-full h-full relative"
         >
-          <img 
-            src="/fonik2.webp" 
-            alt="Фон" 
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover block md:hidden"
-          />
-          <img 
-            src="/fonik.webp" 
-            alt="Фон ПК" 
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover hidden md:block"
-          />
+          {/* 
+            ВАЖЛИВО: раніше тут було ДВА <img> (мобільний + десктопний), і браузер
+            завантажував ОБИДВА зображення одразу, навіть те, яке приховане через CSS
+            (display: none все одно не скасовує завантаження <img src="">).
+            <picture> вирішує це на рівні браузера: завантажується лише 1 файл,
+            залежно від ширини екрана. Візуально нічого не змінилось.
+          */}
+          <picture>
+            <source media="(min-width: 768px)" srcSet="/fonik.webp" />
+            <img 
+              src="/fonik2.webp" 
+              alt="Фон" 
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          </picture>
           {/* Шар затемнення для ефекту фото 2 */}
           <div className="absolute inset-0 bg-slate-900/10 backdrop-contrast-[1.05]" />
         </motion.div>
@@ -893,7 +924,7 @@ export default function App() {
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={stagger} className="flex flex-col gap-4 bg-slate-100/75 backdrop-blur-md p-6 md:p-8 rounded-[2.5rem] border border-white/85 shadow-lg">
             {faqs.map((faq, idx) => (
-              <FaqItem key={idx} faq={faq} isOpen={openFaqIndex === idx} onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} />
+              <FaqItem key={idx} faq={faq} isOpen={openFaqIndex === idx} idx={idx} onToggle={toggleFaq} />
             ))}
           </motion.div>
         </div>
