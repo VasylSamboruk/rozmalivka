@@ -1,0 +1,32 @@
+export const covers = [
+  { src: '/covers/cover-01.webp', thumb: '/covers/thumb-01.webp', w: 760, h: 1074, title: 'Зимова казка' },
+  { src: '/covers/cover-02.webp', thumb: '/covers/thumb-02.webp', w: 760, h: 1074, title: 'З подарунками' },
+  { src: '/covers/cover-03.webp', thumb: '/covers/thumb-03.webp', w: 760, h: 1074, title: 'Різдвяна' },
+  { src: '/covers/cover-04.webp', thumb: '/covers/thumb-04.webp', w: 760, h: 1074, title: 'Різдвяний вечір' },
+  { src: '/covers/cover-05.webp', thumb: '/covers/thumb-05.webp', w: 760, h: 1074, title: 'Святкова зима' },
+  { src: '/covers/cover-06.webp', thumb: '/covers/thumb-06.webp', w: 760, h: 1074, title: 'У санях' },
+  { src: '/covers/cover-07.webp', thumb: '/covers/thumb-07.webp', w: 760, h: 1074, title: 'Персональна' },
+  { src: '/covers/cover-08.webp', thumb: '/covers/thumb-08.webp', w: 760, h: 1074, title: 'Персональна' },
+  { src: '/covers/cover-09.webp', thumb: '/covers/thumb-09.webp', w: 760, h: 1074, title: 'Персональна' },
+  { src: '/covers/cover-10.webp', thumb: '/covers/thumb-10.webp', w: 760, h: 1074, title: 'Персональна' },
+  { src: '/covers/cover-11.webp', thumb: '/covers/thumb-11.webp', w: 760, h: 1140, title: 'Персональна' },
+  { src: '/covers/cover-12.webp', thumb: '/covers/thumb-12.webp', w: 760, h: 1140, title: 'Персональна' },
+  { src: '/covers/cover-13.webp', thumb: '/covers/thumb-13.webp', w: 760, h: 1140, title: 'Персональна' },
+  { src: '/covers/cover-14.webp', thumb: '/covers/thumb-14.webp', w: 760, h: 1140, title: 'Персональна' },
+  { src: '/covers/cover-15.webp', thumb: '/covers/thumb-15.webp', w: 760, h: 1140, title: 'Персональна' },
+  { src: '/covers/cover-16.webp', thumb: '/covers/thumb-16.webp', w: 760, h: 1140, title: 'Персональна' },
+];
+
+export const realLife = [
+  { src: '/real/real-01.webp', w: 900, h: 1337, type: 'image' },
+  { src: '/real/real-02.webp', w: 720, h: 1280, type: 'image' },
+  { src: '/real/real-03.webp', w: 720, h: 960, type: 'image' },
+  { src: '/real/real-04.webp', w: 480, h: 1066, type: 'image' },
+  { src: '/real/real-05.webp', w: 480, h: 640, type: 'image' },
+  { src: '/real/real-06.webp', w: 480, h: 640, type: 'image' },
+  { src: '/real/real-07.webp', w: 480, h: 637, type: 'image' },
+  { src: '/real/real-08.webp', w: 720, h: 480, type: 'image' },
+  { src: '/real/real-09.webp', w: 480, h: 637, type: 'image' },
+  { src: '/real/real-10.webp', w: 480, h: 852, type: 'image' },
+  { src: '/real/real-11.webp', w: 720, h: 720, type: 'image' },
+];

@@ -55,3 +55,27 @@ body::before {
   0% { background-position: center, 0% 50%; }
   100% { background-position: center, 100% 50%; }
 }
+
+/* Легкий зимовий акцент поверх наявного фону, без заміни дизайну */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.85) 1.2px, transparent 1.4px),
+    radial-gradient(circle, rgba(255,255,255,0.55) 1px, transparent 1.2px);
+  background-size: 180px 220px, 260px 300px;
+  background-position: 0 0, 80px 40px;
+  animation: snowDrift 18s linear infinite;
+  opacity: 0.35;
+}
+
+@keyframes snowDrift {
+  to { background-position: 0 220px, 80px 340px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+}
