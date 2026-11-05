@@ -675,38 +675,40 @@ export default function App() {
           </div>
         </motion.div>
 
-                  <div className="max-w-5xl mx-auto mb-6 md:mb-8">
-                            <div className="rounded-[1.6rem] md:rounded-[2rem] overflow-hidden border border-white/80 bg-slate-100/80 shadow-xl backdrop-blur-sm">
-                              <div className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-center font-black uppercase tracking-widest text-[11px] md:text-sm py-2.5 px-3 flex items-center justify-center gap-2">
-                                <Gift size={16} /> До кожної розмальовки — подарунок уже в ціні
-                              </div>
-                              <div className="flex flex-col md:flex-row md:items-stretch">
-                                {[
-                                  { icon: Palette, title: 'Розмальовка', text: 'А4, кольорова обкладинка і пружина. Ваші фото стають сторінками.', badge: 'Ви замовляєте', gift: false },
-                                  { icon: CalendarDays, title: 'Календар А5', text: 'Персональний, на весь 2027 рік. Теж із ваших фото.', badge: 'У подарунок', gift: true },
-                                  { icon: Sticker, title: '2 стікерпаки', text: 'Два набори формату А5 з ваших кадрів, не зі стоку.', badge: 'У подарунок', gift: true },
-                                ].map((item, index) => (
-                                  <div key={item.title} className="flex flex-col md:flex-row md:flex-1 md:items-stretch">
-                                    {index > 0 && (
-                                      <div className="flex items-center justify-center md:px-1">
-                                        <span className="my-1 md:my-0 w-7 h-7 rounded-full bg-white border border-[#FF1493]/20 text-[#FF1493] font-black flex items-center justify-center shadow-sm">+</span>
-                                      </div>
-                                    )}
-                                    <div className="flex-1 px-4 py-4 md:py-6 text-center">
-                                      <div className={`mx-auto mb-2 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md ${item.gift ? 'bg-gradient-to-br from-[#FF5F15] to-[#FF1493]' : 'bg-slate-800'}`}>
-                                        <item.icon size={22} />
-                                      </div>
-                                      <p className="font-black text-base md:text-lg text-slate-800">{item.title}</p>
-                                      <p className="text-xs md:text-sm text-slate-600 font-semibold mt-1 leading-relaxed">{item.text}</p>
-                                      <span className={`inline-flex items-center gap-1 mt-3 text-[10px] font-black uppercase tracking-wide px-2.5 py-1 rounded-full ${item.gift ? 'text-white bg-gradient-to-r from-[#FF5F15] to-[#FF1493]' : 'text-slate-700 bg-white border border-slate-200'}`}>
-                                        {item.gift && <Gift size={12} />} {item.badge}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
+          <div className="max-w-5xl mx-auto mb-6 md:mb-8">
+            <div className="rounded-[1.2rem] md:rounded-[2rem] overflow-hidden border border-white/80 bg-slate-100/80 shadow-xl backdrop-blur-sm">
+              <div className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-center font-black uppercase tracking-wide md:tracking-widest text-[10px] md:text-sm py-2.5 px-3 flex items-center justify-center gap-2">
+                <Gift size={15} className="shrink-0" /> До кожної розмальовки — подарунок уже в ціні
+              </div>
+              <div className="flex flex-col md:flex-row md:items-stretch divide-y divide-slate-200/80 md:divide-y-0">
+                {[
+                  { icon: Palette, title: 'Розмальовка', text: 'А4, обкладинка та пружина. Ваші фото стають сторінками.', badge: 'Ви замовляєте', gift: false },
+                  { icon: CalendarDays, title: 'Календар А5', text: 'Персональний календар із ваших фото на 2027 рік.', badge: 'У подарунок', gift: true },
+                  { icon: Sticker, title: '2 стікерпаки', text: 'Два набори формату А5 з ваших фото.', badge: 'У подарунок', gift: true },
+                ].map((item, index) => (
+                  <div key={item.title} className="flex flex-col md:flex-row md:flex-1 md:items-stretch">
+                    {index > 0 && (
+                      <div className="hidden md:flex items-center justify-center md:px-1">
+                        <span className="my-1 md:my-0 w-7 h-7 rounded-full bg-white border border-[#FF1493]/20 text-[#FF1493] font-black flex items-center justify-center shadow-sm">+</span>
+                      </div>
+                    )}
+                    <div className="flex flex-row items-center gap-3 md:flex-1 md:flex-col md:justify-center md:gap-0 px-3 py-2.5 md:px-4 md:py-6 text-left md:text-center">
+                      <div className={`shrink-0 w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-md md:mx-auto md:mb-2 ${item.gift ? 'bg-gradient-to-br from-[#FF5F15] to-[#FF1493]' : 'bg-slate-800'}`}>
+                        <item.icon size={19} className="md:w-[22px] md:h-[22px]" />
+                      </div>
+                      <div className="min-w-0 flex-1 md:flex-none">
+                        <p className="font-black text-sm md:text-lg text-slate-800">{item.title}</p>
+                        <p className="text-[11px] md:text-sm text-slate-600 font-semibold mt-0.5 md:mt-1 leading-snug md:leading-relaxed">{item.text}</p>
+                      </div>
+                      <span className={`shrink-0 inline-flex items-center gap-1 md:mt-3 text-[9px] md:text-[10px] font-black uppercase tracking-wide px-2 py-1 md:px-2.5 rounded-full ${item.gift ? 'text-white bg-gradient-to-r from-[#FF5F15] to-[#FF1493]' : 'text-slate-700 bg-white border border-slate-200'}`}>
+                        {item.gift && <Gift size={11} />} {item.badge}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
                           <div className="max-w-5xl mx-auto">
                             <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="glass-card rounded-[1.6rem] md:rounded-[2.5rem] p-4 pt-5 md:p-8 w-full relative shadow-2xl bg-slate-100/80 backdrop-blur-md border-white/80">
