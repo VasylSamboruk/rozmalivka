@@ -4,7 +4,7 @@ import {
   ChevronRight, Camera, Printer, PackageOpen, 
   Palette, Star, Sparkles, MessageCircleHeart,
   X, ChevronsLeftRight, Heart, CheckCircle2, ChevronDown,
-  Send, ShieldCheck, MessageSquarePlus, Gift, CalendarDays, Sticker
+  Send, ShieldCheck, MessageSquarePlus, Gift, CalendarDays, Sticker, ZoomIn
 } from 'lucide-react';
   import { covers } from './galleryManifest';
   import { calendarPhotos, livePhotos, stickerPhotos } from './media';
@@ -582,6 +582,92 @@ export default function App() {
   const bgOpacity = useTransform(scrollYProgress, [0, 1], [0.99, 0.35]); 
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.06]);       
 
+  const giftBoxBanner = (
+    <div className="max-w-5xl mx-auto mb-5 md:mb-6">
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={scrollConfig}
+        variants={fadeUp}
+        className="relative overflow-hidden rounded-[1.6rem] md:rounded-[2rem] border border-white/90 bg-white/90 shadow-2xl backdrop-blur-md"
+      >
+        <div className="grid md:grid-cols-[0.8fr_1.2fr]">
+          <div className="relative flex min-h-[120px] items-center justify-center overflow-hidden bg-gradient-to-br from-sky-100 via-rose-50 to-orange-100 px-0 py-0 md:min-h-[210px] md:px-6 md:py-4">
+            <div className="absolute -left-12 -top-14 h-36 w-36 rounded-full bg-white/50 blur-2xl" />
+            <div className="absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-pink-200/40 blur-2xl" />
+            <button
+              type="button"
+              onClick={() => setSelectedImageModal({ look: true, draw: '/gift-box.jpg', orig: '/gift-box.jpg' })}
+              aria-label="Збільшити зображення подарункового боксу"
+              className="group absolute inset-0 z-10 flex h-full w-full items-center justify-center overflow-hidden focus-visible:outline focus-visible:outline-4 focus-visible:outline-inset focus-visible:outline-[#FF1493]"
+            >
+              <img
+                src="/gift-box.jpg"
+                alt="Подарунковий бокс на св. Миколая"
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <span className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-white/80 bg-white/90 px-2.5 py-1 text-[9px] font-bold text-slate-600 shadow-md backdrop-blur-sm">
+                <ZoomIn size={14} className="text-[#FF1493]" /> Натисніть, щоб збільшити
+              </span>
+            </button>
+          </div>
+
+          <div className="relative flex flex-col justify-center p-3 sm:p-5 md:p-5">
+            <div className="mb-1.5 inline-flex w-fit items-center gap-1 rounded-full bg-gradient-to-r from-[#FF5F15]/10 to-[#FF1493]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#E94755] sm:text-[10px]">
+              <Sparkles size={12} /> Святкова пропозиція
+            </div>
+            <h2 className="text-xl font-black leading-tight tracking-tight text-slate-900 sm:text-2xl md:text-[1.7rem]">
+              Подарунковий бокс
+              <span className="mt-1 block bg-gradient-to-r from-[#FF5F15] to-[#FF1493] bg-clip-text text-transparent">на св. Миколая!</span>
+            </h2>
+            <p className="mt-1.5 text-xs font-medium leading-relaxed text-slate-600 sm:text-sm">
+              Святковий набір для творчості, гри та маленьких сюрпризів.
+            </p>
+
+            <ul className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-semibold text-slate-700 sm:gap-x-3 sm:text-xs">
+              {[
+                'Персональна розмальовка на 14 аркушів',
+                'Різдвяна розмальовка',
+                'Міні-іграшка',
+                'Браслетик',
+                'Брелок',
+                'Наклейки',
+                'Календарик'
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-1 sm:gap-1.5">
+                  <CheckCircle2 size={13} className="mt-0.5 shrink-0 text-[#FF5F15] sm:h-[14px] sm:w-[14px]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-2.5">
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+                  700 <span className="text-lg text-[#FF1493]">₴</span>
+                </p>
+                <p className="text-sm font-bold text-slate-400 line-through sm:text-base">1150 ₴</p>
+              </div>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={(e) => {
+                  fireConfetti(e);
+                  sendClickToTelegram('Подарунковий бокс на св. Миколая: Замовити');
+                  setIsOrderModalOpen(true);
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FF5F15] to-[#FF1493] px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-[#FF1493]/25 transition-shadow hover:shadow-xl sm:px-5 sm:text-sm"
+              >
+                <Gift size={18} /> Замовити бокс
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col text-slate-800 font-sans overflow-x-hidden selection:bg-brand-pink selection:text-white relative bg-[#ECEEF1]" onContextMenu={(e) => e.preventDefault()}>
       
@@ -620,9 +706,9 @@ export default function App() {
       <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={bounceConfig} className="fixed top-0 w-full z-50 pointer-events-none">
         <motion.div initial={false} animate={{ y: isScrolled ? -100 : 0, opacity: isScrolled ? 0 : 1 }} transition={{ duration: 0.4, ease: "easeInOut" }} className="absolute inset-0 bg-white/80 backdrop-blur-lg border-b border-white/40 shadow-sm pointer-events-auto" />
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative z-10">
-          <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`flex items-center gap-2 text-lg md:text-xl font-black tracking-tight cursor-pointer ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
-            <span className="text-[#e6500e]">✏️ Моя</span> Розмальовка
-          </motion.div>
+          <motion.button type="button" aria-label="На початок сторінки" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="pointer-events-auto flex items-center cursor-pointer border-0 bg-transparent p-0">
+            <img src="/brand-logo-winter.png" alt="Моя Розмальовка" className="h-10 w-auto max-w-[190px] object-contain md:h-12 md:max-w-[260px]" />
+          </motion.button>
           <motion.div initial={false} animate={{ opacity: isScrolled ? 0 : 1, y: isScrolled ? -20 : 0 }} transition={{ duration: 0.3 }} className={`hidden md:flex gap-8 font-bold text-sm text-slate-700 ${isScrolled ? 'pointer-events-none' : 'pointer-events-auto'}`}>
             <a href="#gallery" className="hover:text-[#FF1493] transition-all">Галерея</a>
                         <a href="#real" className="hover:text-[#FF1493] transition-all">Вживу</a>
@@ -646,25 +732,22 @@ export default function App() {
         </div>
       </motion.nav>
 
-      <main className="max-w-7xl mx-auto px-4 pt-32 pb-16 lg:pt-40 relative z-10 shrink-0" id="order-section">
-        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center max-w-4xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 bg-white/80 border border-[#FF1493]/20 text-[#FF1493] font-black text-[11px] md:text-xs uppercase tracking-widest px-4 py-2 rounded-full mb-5">
-                      <Gift size={15} /> Акція
-          </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 tracking-tight drop-shadow-sm">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-16 lg:pt-28 relative z-10 shrink-0" id="order-section">
+        <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center max-w-4xl mx-auto mb-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-4 tracking-tight drop-shadow-sm">
             УНІКАЛЬНІ СТИЛЬНІ <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1493] to-[#FF5F15]">РОЗМАЛЬОВКИ</span> <br />
             З ВЛАСНИХ ФОТО
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed mb-6">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed mb-4">
             Ми можемо <b className="text-slate-800">створити</b> розмальовку ідентично по вашому фото або ж перенести головного героя у світ фантазій. Будь-яка тематика за вашим бажанням!
           </p>
-          <div className="flex justify-center gap-2 md:gap-6 mt-8 md:mt-10 text-[9px] sm:text-xs md:text-sm font-bold text-slate-700 w-full px-1">
+          <div className="flex justify-center gap-2 md:gap-6 mt-5 md:mt-6 text-[9px] sm:text-xs md:text-sm font-bold text-slate-700 w-full px-1">
             <div className="relative bg-slate-100/80 backdrop-blur-sm pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
                 <Palette className="text-[#FF5F15] w-3.5 h-3.5 md:w-5 md:h-5" /> 
               </div>
-              <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Вже створили 100+ розмальовок</span>
+              <span className="whitespace-nowrap tracking-tighter sm:tracking-normal">Вже створили 500+ розмальовок</span>
             </div>
             <div className="relative bg-slate-100/80 backdrop-blur-sm pt-5 pb-2 px-2 md:pt-6 md:pb-4 md:px-8 rounded-xl md:rounded-2xl shadow-sm border border-white/50 flex items-center justify-center text-center w-full max-w-[160px] sm:max-w-[220px] md:max-w-[300px]">
               <div className="absolute -top-3.5 md:-top-5 left-1/2 -translate-x-1/2 bg-white w-7 h-7 md:w-10 md:h-10 rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
@@ -675,40 +758,7 @@ export default function App() {
           </div>
         </motion.div>
 
-          <div className="max-w-5xl mx-auto mb-6 md:mb-8">
-            <div className="rounded-[1.2rem] md:rounded-[2rem] overflow-hidden border border-white/80 bg-slate-100/80 shadow-xl backdrop-blur-sm">
-              <div className="bg-gradient-to-r from-[#FF5F15] to-[#FF1493] text-white text-center font-black uppercase tracking-wide md:tracking-widest text-[10px] md:text-sm py-2.5 px-3 flex items-center justify-center gap-2">
-                <Gift size={15} className="shrink-0" /> До кожної розмальовки — подарунок уже в ціні
-              </div>
-              <div className="flex flex-col md:flex-row md:items-stretch divide-y divide-slate-200/80 md:divide-y-0">
-                {[
-                  { icon: Palette, title: 'Розмальовка', text: 'А4, обкладинка та пружина. Ваші фото стають сторінками.', badge: 'Ви замовляєте', gift: false },
-                  { icon: CalendarDays, title: 'Календар А5', text: 'Персональний календар із ваших фото на 2027 рік.', badge: 'У подарунок', gift: true },
-                  { icon: Sticker, title: '2 стікерпаки', text: 'Два набори формату А5 з ваших фото.', badge: 'У подарунок', gift: true },
-                ].map((item, index) => (
-                  <div key={item.title} className="flex flex-col md:flex-row md:flex-1 md:items-stretch">
-                    {index > 0 && (
-                      <div className="hidden md:flex items-center justify-center md:px-1">
-                        <span className="my-1 md:my-0 w-7 h-7 rounded-full bg-white border border-[#FF1493]/20 text-[#FF1493] font-black flex items-center justify-center shadow-sm">+</span>
-                      </div>
-                    )}
-                    <div className="flex flex-row items-center gap-3 md:flex-1 md:flex-col md:justify-center md:gap-0 px-3 py-2.5 md:px-4 md:py-6 text-left md:text-center">
-                      <div className={`shrink-0 w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-md md:mx-auto md:mb-2 ${item.gift ? 'bg-gradient-to-br from-[#FF5F15] to-[#FF1493]' : 'bg-slate-800'}`}>
-                        <item.icon size={19} className="md:w-[22px] md:h-[22px]" />
-                      </div>
-                      <div className="min-w-0 flex-1 md:flex-none">
-                        <p className="font-black text-sm md:text-lg text-slate-800">{item.title}</p>
-                        <p className="text-[11px] md:text-sm text-slate-600 font-semibold mt-0.5 md:mt-1 leading-snug md:leading-relaxed">{item.text}</p>
-                      </div>
-                      <span className={`shrink-0 inline-flex items-center gap-1 md:mt-3 text-[9px] md:text-[10px] font-black uppercase tracking-wide px-2 py-1 md:px-2.5 rounded-full ${item.gift ? 'text-white bg-gradient-to-r from-[#FF5F15] to-[#FF1493]' : 'text-slate-700 bg-white border border-slate-200'}`}>
-                        {item.gift && <Gift size={11} />} {item.badge}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {giftBoxBanner}
 
                           <div className="max-w-5xl mx-auto">
                             <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="glass-card rounded-[1.6rem] md:rounded-[2.5rem] p-4 pt-5 md:p-8 w-full relative shadow-2xl bg-slate-100/80 backdrop-blur-md border-white/80">
@@ -885,6 +935,31 @@ export default function App() {
         </motion.div>
       </section>
 
+      <section id="real" className="py-16 shrink-0 relative z-10">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">ЯК ЦЕ <span className="text-[#FF1493]">ВИГЛЯДАЄ ВЖИВУ</span></h2>
+            <p className="text-base md:text-lg text-slate-700 font-semibold max-w-3xl mx-auto mb-6">Реальні фото замовлень. Відео і ще більше кадрів — в Instagram.</p>
+            <a href="https://instagram.com/my_rozm" target="_blank" rel="noreferrer" onClick={() => sendClickToTelegram('Галерея: Instagram')} className="inline-flex bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white font-black px-6 py-3.5 rounded-full shadow-lg">
+              Дивитись в Instagram
+            </a>
+          </motion.div>
+          {livePhotos.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-8">
+              {livePhotos.map((src) => (
+                <button key={src} type="button" onClick={() => setSelectedImageModal({ look: true, type: src.match(/\.(mp4|webm)$/i) ? 'video' : 'image', draw: src, orig: src })} className="glass-frame p-1.5 overflow-hidden aspect-[3/4]">
+                  {src.match(/\.(mp4|webm)$/i) ? (
+                    <video src={src} muted playsInline className="w-full h-full object-cover rounded-xl" />
+                  ) : (
+                    <img src={src} alt="Розмальовка вживу" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-xl" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       <section id="how-it-works" className="py-20 bg-slate-100/50 backdrop-blur-md border-y border-white/50 shrink-0 relative z-10">
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <motion.h2 initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-3xl md:text-5xl font-black text-center mb-16">
@@ -935,31 +1010,6 @@ export default function App() {
           </motion.div>
         </div>
       </section>
-
-      <section id="real" className="py-16 shrink-0 relative z-10">
-              <div className="max-w-6xl mx-auto px-4">
-                <motion.div initial="hidden" whileInView="visible" viewport={scrollConfig} variants={fadeUp} className="text-center mb-8">
-                  <h2 className="text-4xl md:text-5xl font-black mb-4">ЯК ЦЕ <span className="text-[#FF1493]">ВИГЛЯДАЄ ВЖИВУ</span></h2>
-                  <p className="text-base md:text-lg text-slate-700 font-semibold max-w-3xl mx-auto mb-6">Реальні фото замовлень. Відео і ще більше кадрів — в Instagram.</p>
-                  <a href="https://instagram.com/my_rozm" target="_blank" rel="noreferrer" onClick={() => sendClickToTelegram('Галерея: Instagram')} className="inline-flex bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white font-black px-6 py-3.5 rounded-full shadow-lg">
-                    Дивитись в Instagram
-                  </a>
-                </motion.div>
-                {livePhotos.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-8">
-                    {livePhotos.map((src) => (
-                      <button key={src} type="button" onClick={() => setSelectedImageModal({ look: true, type: src.match(/\.(mp4|webm)$/i) ? 'video' : 'image', draw: src, orig: src })} className="glass-frame p-1.5 overflow-hidden aspect-[3/4]">
-                        {src.match(/\.(mp4|webm)$/i) ? (
-                          <video src={src} muted playsInline className="w-full h-full object-cover rounded-xl" />
-                        ) : (
-                          <img src={src} alt="Розмальовка вживу" loading="lazy" decoding="async" className="w-full h-full object-cover rounded-xl" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </section>
 
       <section id="reviews" className="py-20 shrink-0 relative z-10">
         <div className="max-w-6xl mx-auto px-4 text-center">
